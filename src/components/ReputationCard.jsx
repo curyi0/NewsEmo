@@ -1,0 +1,166 @@
+import React, { useRef, useEffect, useState } from "react";
+import { Card, Table, Tag, Button } from "antd";
+import Cloud from "react-d3-cloud";
+
+const wordData = [
+  { keyword: "기대", type: "긍정", count: 7346 },
+  { keyword: "강세", type: "긍정", count: 4408 },
+  { keyword: "우려", type: "부정", count: 1338 },
+  { keyword: "긍정적", type: "긍정", count: 1079 },
+  { keyword: "호조", type: "긍정", count: 911 },
+  { keyword: "1위", type: "긍정", count: 823 },
+  { keyword: "급등하다", type: "중립", count: 784 },
+  { keyword: "최고", type: "긍정", count: 763 },
+  { keyword: "급락", type: "부정", count: 741 },
+  { keyword: "선호", type: "긍정", count: 567 },
+  { keyword: "화해", type: "긍정", count: 864 },
+  { keyword: "비판하다", type: "부정", count: 1081 },
+  { keyword: "영향력", type: "중립", count: 1578 },
+];
+
+const typeColor = {
+  긍정: "#5845ea",
+  부정: "#f53933",
+  중립: "#fbc400",
+};
+
+const columns = [
+  {
+    title: "단어",
+    dataIndex: "keyword",
+    key: "keyword",
+  },
+  {
+    title: "긍·부정",
+    dataIndex: "type",
+    key: "type",
+    render: (type) => <Tag color={typeColor[type]}>{type}</Tag>,
+  },
+  {
+    title: "건수",
+    dataIndex: "count",
+    key: "count",
+    align: "right",
+  },
+];
+
+const fontSizeMapper = (word) =>
+  Math.min(Math.log2(word.value + 1) * 8, 48);
+const fillColor = (word) => typeColor[word.type] || "#222";
+
+const ReputationCard = () => {
+  const [viewMode, setViewMode] = useState("cloud");
+
+  const tooltipRef = useRef(null);
+
+  const handleMouseOver = (event, d) => {
+    const tooltip = tooltipRef.current;
+    if (tooltip) {
+      tooltip.style.display = "block";
+      tooltip.style.left = `${event.clientX}px`;
+      tooltip.style.top = `${event.clientY - 30}px`;
+      tooltip.textContent = `${d.text}: ${d.value.toLocaleString()}건`;
+    }
+  };
+
+  const handleMouseOut = () => {
+    const tooltip = tooltipRef.current;
+    if (tooltip) {
+      tooltip.style.display = "none";
+    }
+  };
+
+  const cloudData = wordData.map((item) => ({
+    text: item.keyword,
+    value: item.count,
+    type: item.type,
+  }));
+
+  return (
+    <Card
+      title="긍 · 부정"
+      style={{
+        width: "100%",           
+        maxWidth: 750,
+        borderRadius: "20px",
+      }}
+      bodyStyle={{ padding: 0 }}
+      extra={
+        <>
+          <Button
+            size="middle"
+            type="default"
+            style={{
+              borderRadius: "6px 0 0 6px",
+              border: "2px solid",
+              borderColor: viewMode === "cloud" ? "#1677ff" : "#d9d9d9",
+              color: "#1677ff",
+              backgroundColor: "#fff",
+            }}
+            onClick={() => setViewMode("cloud")}
+          >
+            워드맵
+          </Button>
+
+          <Button
+            size="middle"
+            type="default"
+            style={{
+              borderRadius: "0 6px 6px 0",
+              border: "2px solid",
+              borderColor: viewMode === "table" ? "#1677ff" : "#d9d9d9",
+              color: "#1677ff",
+              backgroundColor: "#fff",
+            }}
+            onClick={() => setViewMode("table")}
+          >
+            순위표
+          </Button>
+        </>
+      }
+    >
+      {viewMode === "cloud" ? (
+        <div style={{ width: "100%", height: 477 }}>
+          <Cloud
+            data={cloudData}
+            font="Pretendard"
+            fontSizeMapper={fontSizeMapper}
+            rotate={0}
+            padding={6}
+            fill={fillColor}
+            width={undefined}
+            height={undefined}
+            onWordMouseOver={handleMouseOver}
+            onWordMouseOut={handleMouseOut}
+          />
+          <div
+            ref={tooltipRef}
+            style={{
+              position: "fixed",
+              display: "none",
+              backgroundColor: "rgba(0,0,0,0.75)",
+              color: "#fff",
+              padding: "4px 8px",
+              borderRadius: 4,
+              fontSize: 12,
+              pointerEvents: "none",
+              zIndex: 1000,
+            }}
+          />
+        </div>
+      ) : (
+        <div style={{ maxHeight: 400, overflowY: "auto" }}>
+          <Table
+            columns={columns}
+            dataSource={wordData}
+            pagination={false}
+            rowKey="keyword"
+            size="small"
+          />
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default ReputationCard;

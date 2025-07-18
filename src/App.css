@@ -1,0 +1,161 @@
+/* 전체 레이아웃을 좀 더 균형 잡히게 만들기 위해 display: flex 추가 */
+body {
+  font-family: Arial, sans-serif;
+  
+  margin: 0;
+  display: flex;
+  min-width: 100vw;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 내비게이션 바 */
+nav {
+  background-color: #1e1e2f;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  width: 500%;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 내비게이션 리스트 */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* 내비게이션 링크 스타일 */
+nav li {
+  display: inline;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #00d1b2; /* 부트스트랩 느낌의 민트 색상 */
+}
+
+/* 카테고리 토글 버튼 */
+.category-toggle-btn {
+  padding: 12px 20px;
+  display: flex;
+  justify-items: right;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 버튼 호버 효과 */
+.category-toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+/* 카테고리 목록 */
+.category-list {
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 250px; /* 너비를 고정시켜서 균형 잡힌 느낌 */
+  transition: all 0.3s ease;
+}
+
+/* 카테고리 목록 ul */
+.category-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.category-list li {
+  margin: 10px 0;
+}
+
+.category-list li a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* 카테고리 목록 링크 호버 효과 */
+.category-list li a:hover {
+  color: #00d1b2;
+}
+
+
+.carousel-section {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.carousel-item h2 {
+  font-size: 1.8rem;
+}
+
+.carousel-btn {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.date-keywords-section {
+  margin: 30px 0;
+  text-align: center;
+}
+
+.calendar p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+.keywords p {
+  font-weight: bold;
+  margin: 20px 0 10px;
+}
+
+.keyword-cloud {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.news-section {
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.news-article p, .contact-info p {
+  margin: 10px 0;
+  color: #333;
+}
