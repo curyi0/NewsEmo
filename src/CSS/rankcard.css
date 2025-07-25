@@ -1,0 +1,49 @@
+.flip-card {
+  position: relative;
+  width: 100%;
+  height: 90px;
+  background: linear-gradient(120deg, bisque 60%, rgb(255, 231, 222));
+  border: 1px solid coral;
+  border-radius: 1rem;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
+  overflow: visible; /* 중요: 뒷면이 겹쳐서 튀어나올 수 있게 */
+}
+
+.flip-card-front {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(153, 94, 72);
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* 뒷면이 아래에 생기되, 처음엔 안 보이도록 설정 */
+.flip-card-back {
+  position: absolute;
+  top: 100%; /* 앞면 아래에 붙음 */
+  left: 0;
+  width: 100%;
+  transform-origin: top center;
+  transform: rotateX(-90deg); /* 아래로 말려서 안 보이게 */
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  padding: 20px;
+  background: rgb(245, 192, 148);
+  border-radius: 1rem;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 호버 시 뒷면이 아래로 펼쳐지며 flip */
+.flip-card:hover .flip-card-back {
+  transform: rotateX(0deg);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ranktitle {
+  text-align: center;
+}

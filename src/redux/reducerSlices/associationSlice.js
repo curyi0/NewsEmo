@@ -1,8 +1,10 @@
-import { createSlice } from "/node_modules/.vite/deps/@reduxjs_toolkit.js?v=27e8c257";
+
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   centerKeyword: "엔비디아", 
   relatedKeywords: [
+
   { name: "미국", value: 1282 },
   { name: "시장", value: 711 },
   { name: "달러", value: 1398 },

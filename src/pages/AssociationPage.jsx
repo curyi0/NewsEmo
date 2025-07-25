@@ -1,5 +1,3 @@
-import React from 'react'
-
 import React from 'react';
 import AssociationMapCard from '../components/AssociationMapCard';
 import MentionChannelCard from '../components/MentionChannelCard';
@@ -27,14 +25,14 @@ const AssociationPage = () => {
   return (
     <Row gutter={20}>
       <Col xs={24}>
-        <div style={{ padding: 0, background: '#e3e3eeff', marginBottom: 20, 
+        <div style={{ padding: 0, background: '#EBE4FF', marginBottom: 20, 
             display: 'flex', alignItems: 'center'
           }}>
           <AssociationTopCard />
         </div>
       </Col>
       
-      <Col xs={24} md={12}>
+      <Col xs={24} md={10}>
         <AssociationMapCard height={477}/>
       </Col>
       <Col xs={24} md={12}>
@@ -47,9 +45,7 @@ const AssociationPage = () => {
           height={534}
         />
       </Col>
-      <Col xs={24} md={8}>
-          <KeywordRankCard />
-      </Col>
+      
     </Row>
   );
 };

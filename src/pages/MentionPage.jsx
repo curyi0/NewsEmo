@@ -2,8 +2,14 @@ import React from 'react';
 import MentionTrendCard from '../components/MentionTrendCard'
 import MentionChannelCard from '../components/MentionChannelCard';
 import { Row, Col } from 'antd';
+import MentionTopCard from '../components/MentionTopCard';
+import { useState } from 'react';
+
+
 
 const MentionPage = () => {
+  const [maxDate, setMaxDate] = useState(null);
+  // 대충 임시 데이터
   const dummyItems = [
     {
       icon: 'https://via.placeholder.com/20', // 아이콘 이미지
@@ -18,11 +24,19 @@ const MentionPage = () => {
       url: 'https://example.com/2',
     },
   ];
-
+  
   return (
-    <Row gutter={16}>
+    <Row gutter={20}>
+      <Col xs={24}>
+        <div style={{ padding: 0, background: '#EBE4FF', marginBottom: 20, 
+            display: 'flex', alignItems: 'center'
+          }}>
+          <MentionTopCard maxDate={maxDate}/>
+        </div>
+      </Col>
+
       <Col xs={24} md={12}>
-        <MentionTrendCard />
+        <MentionTrendCard onMaxDateChange={setMaxDate} height={447}/>
       </Col>
       <Col xs={24} md={12}>
         <MentionChannelCard
@@ -31,6 +45,7 @@ const MentionPage = () => {
           totalCount={1000}
           viewCount={500}
           items={dummyItems}
+          height={534}
         />
       </Col>
     </Row>

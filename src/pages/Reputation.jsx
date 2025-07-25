@@ -4,8 +4,11 @@ import MentionChannelCard from '../components/MentionChannelCard';
 import ReputationTopCard from '../components/ReputationTopCard';
 import { Row, Col } from 'antd';
 import ReputationRankCard from '../components/ReputationRankCard';
+import { useState } from 'react';
 
 const Reputation = () => {
+  const [summary, setSummary] = useState({ maxType: null, maxPercentage: null });
+
   // 대충 임시 데이터
   const dummyItems = [
     {
@@ -25,15 +28,15 @@ const Reputation = () => {
   return (
     <Row gutter={20}>
       <Col xs={24}>
-        <div style={{ padding: 0, background: '#e3e3eeff', marginBottom: 20, 
+        <div style={{ padding: 0, background: '#EBE4FF', marginBottom: 20, 
             display: 'flex', alignItems: 'center'
           }}>
-          <ReputationTopCard/>
+          <ReputationTopCard summary={summary}/>
         </div>
       </Col>
 
       <Col xs={24} md={10}>
-        <ReputationCard />
+        <ReputationCard onCalculateSummary={setSummary}/>
       </Col>
       <Col xs={24} md={12}>
         <MentionChannelCard
@@ -45,9 +48,7 @@ const Reputation = () => {
           height={534}
         />
       </Col>
-      <Col xs={24} md={8}>
-          <ReputationRankCard />
-      </Col>
+      
     </Row>
   );
 };

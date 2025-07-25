@@ -1,6 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Card, Table, Tag, Button } from "antd";
-import Cloud from "react-d3-cloud";
+import React, { useEffect, useState } from "react";
+import { Card, Table, Tag } from "antd";
+import ReactWordcloud from "react-wordcloud";
+import { motion, LayoutGroup } from "framer-motion";
+import "../CSS/tabButton.css"; // 탭 스타일 재사용
 
 const wordData = [
   { keyword: "기대", type: "긍정", count: 7346 },
@@ -44,31 +46,29 @@ const columns = [
   },
 ];
 
-const fontSizeMapper = (word) =>
-  Math.min(Math.log2(word.value + 1) * 8, 48);
-const fillColor = (word) => typeColor[word.type] || "#222";
-
-const ReputationCard = () => {
+const ReputationCard = ({ onCalculateSummary }) => {
   const [viewMode, setViewMode] = useState("cloud");
 
-  const tooltipRef = useRef(null);
+  const tabs = [
+    { id: "cloud", label: "워드맵" },
+    { id: "table", label: "순위표" },
+  ];
 
-  const handleMouseOver = (event, d) => {
-    const tooltip = tooltipRef.current;
-    if (tooltip) {
-      tooltip.style.display = "block";
-      tooltip.style.left = `${event.clientX}px`;
-      tooltip.style.top = `${event.clientY - 30}px`;
-      tooltip.textContent = `${d.text}: ${d.value.toLocaleString()}건`;
-    }
-  };
+  useEffect(() => {
+    const typeTotals = wordData.reduce(
+      (acc, item) => {
+        acc[item.type] += item.count;
+        return acc;
+      },
+      { 긍정: 0, 부정: 0, 중립: 0 }
+    );
 
-  const handleMouseOut = () => {
-    const tooltip = tooltipRef.current;
-    if (tooltip) {
-      tooltip.style.display = "none";
-    }
-  };
+    const totalCount = typeTotals.긍정 + typeTotals.부정 + typeTotals.중립;
+    const entries = Object.entries(typeTotals);
+    const [maxType, maxTypeCount] = entries.reduce((a, b) => (a[1] > b[1] ? a : b));
+    const maxPercentage = ((maxTypeCount / totalCount) * 100).toFixed(1);
+    onCalculateSummary?.({ maxType, maxPercentage });
+  }, [onCalculateSummary]);
 
   const cloudData = wordData.map((item) => ({
     text: item.keyword,
@@ -76,80 +76,64 @@ const ReputationCard = () => {
     type: item.type,
   }));
 
+  const options = {
+  rotations: 1,
+  rotationAngles: [0, 0],
+  fontSizes: [14, 48],
+  fontFamily: "Pretendard",
+  padding: 3,
+  enableTooltip: true,
+  deterministic: true,
+  colors: cloudData.map((d) => typeColor[d.type]),
+  tooltipOptions: {
+    allowHTML: true,
+  
+  },
+};
   return (
     <Card
       title="긍 · 부정"
       style={{
-        width: "100%",           
+        width: "100%",
         maxWidth: 750,
         borderRadius: "20px",
       }}
       bodyStyle={{ padding: 0 }}
       extra={
-        <>
-          <Button
-            size="middle"
-            type="default"
-            style={{
-              borderRadius: "6px 0 0 6px",
-              border: "2px solid",
-              borderColor: viewMode === "cloud" ? "#1677ff" : "#d9d9d9",
-              color: "#1677ff",
-              backgroundColor: "#fff",
-            }}
-            onClick={() => setViewMode("cloud")}
-          >
-            워드맵
-          </Button>
-
-          <Button
-            size="middle"
-            type="default"
-            style={{
-              borderRadius: "0 6px 6px 0",
-              border: "2px solid",
-              borderColor: viewMode === "table" ? "#1677ff" : "#d9d9d9",
-              color: "#1677ff",
-              backgroundColor: "#fff",
-            }}
-            onClick={() => setViewMode("table")}
-          >
-            순위표
-          </Button>
-        </>
+        <LayoutGroup>
+          <div className="trend-tab-list">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setViewMode(tab.id)}
+                className={`trend-tab-button ${viewMode === tab.id ? "active" : ""}`}
+              >
+                <span className="tab-label">{tab.label}</span>
+                {viewMode === tab.id && (
+                  <motion.span
+                    layoutId="bubble"
+                    className="trend-tab-indicator"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        </LayoutGroup>
       }
     >
       {viewMode === "cloud" ? (
-        <div style={{ width: "100%", height: 477 }}>
-          <Cloud
-            data={cloudData}
-            font="Pretendard"
-            fontSizeMapper={fontSizeMapper}
-            rotate={0}
-            padding={6}
-            fill={fillColor}
-            width={undefined}
-            height={undefined}
-            onWordMouseOver={handleMouseOver}
-            onWordMouseOut={handleMouseOut}
-          />
-          <div
-            ref={tooltipRef}
-            style={{
-              position: "fixed",
-              display: "none",
-              backgroundColor: "rgba(0,0,0,0.75)",
-              color: "#fff",
-              padding: "4px 8px",
-              borderRadius: 4,
-              fontSize: 12,
-              pointerEvents: "none",
-              zIndex: 1000,
+        <div style={{ width: "100%", height: 480 }}>
+          <ReactWordcloud
+            words={cloudData}
+            options={options}
+            callbacks={{
+              getWordTooltip: (word) => `<span style="color: '#black'; font-weight: bold;">${word.value.toLocaleString()}건</span>`,
             }}
           />
         </div>
       ) : (
-        <div style={{ maxHeight: 400, overflowY: "auto" }}>
+        <div style={{ maxHeight: 477, overflowY: "auto" }}>
           <Table
             columns={columns}
             dataSource={wordData}

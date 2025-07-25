@@ -1,0 +1,100 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Card, Row, Col, Divider, Typography, Spin, Alert, Empty } from 'antd';
+
+const { Title, Text, Paragraph } = Typography;
+
+const CompanyInfo = () => {
+  const { list: companies, status, error } = useSelector((state) => state.company);
+  console.log("회사정보 ", companies)
+
+  if (status === "loading") return <Spin />;
+  if (error) return <Alert message={error} type="error" showIcon />;
+  if (!companies || companies.length === 0) return <Empty description="검색된 회사가 없습니다." />;
+
+  // const company = companies.list[0]; // 1개만 보여줄 경우
+  const excludedFields = ["_id", "id", "name", "crawled_at", "ISIN"];
+  const logo = companies["로고"];
+  const summary = companies["summary"];
+  const website = companies["웹사이트"];
+
+  return (
+    <Card
+      style={{
+        borderRadius: 16,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        marginTop: 24,
+        width: '60%',
+        
+      }}
+      bodyStyle={{ padding: 24 }}
+    >
+      {/* 상단 - 로고 + 기업명 + 웹사이트 */}
+      <Row justify="center" style={{ textAlign: 'center' }}>
+        <Col>
+          {logo && (
+            <img
+              src={logo}
+              alt="기업 로고"
+              style={{
+                maxHeight: 80,
+                maxWidth: 200,
+                objectFit: 'contain',
+                marginBottom: 8
+              }}
+            />
+          )} 
+          {companies["기업명"] && <Title level={4}>{companies["기업명"]}</Title>}
+          {website && (
+            <a
+              href={website.startsWith("http") ? website : `https://${website}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {website}
+            </a>
+          )}
+        </Col>
+      </Row>
+
+      {/* 기업 개요 + 기타 항목 */}
+      <Row justify="center">
+        <Col xs={24} md={14}>
+          {summary && (
+            <>
+              <Title level={5}>기업 개요</Title>
+              <Paragraph>{summary}</Paragraph>
+              <Divider />
+            </>
+          )}
+
+          <Row gutter={[64, 8]}>
+            {Object.entries(companies)
+              .filter(([key, value]) =>
+                value !== null &&
+                value !== "" &&
+                !excludedFields.includes(key) &&
+                !["로고", "summary", "웹사이트", "기업명"].includes(key)
+              )
+              .map(([key, value]) => (
+                <Col xs={24} sm={12} key={key}>
+                  <Text strong>{key}</Text>
+                  <div style={{ marginTop: 4 }}>
+                    {typeof value === "string" && value.includes("\n") ? (
+                      value.split("\n").map((line, i) => <div key={i}>{line}</div>)
+                    ) : typeof value === "string" && value.startsWith("http") ? (
+                      <a href={value} target="_blank" rel="noopener noreferrer">{value}</a>
+                    ) : (
+                      String(value)
+                    )}
+                  </div>
+                </Col>
+              ))}
+          </Row>
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+export default CompanyInfo;

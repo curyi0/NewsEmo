@@ -1,0 +1,106 @@
+import React from 'react';
+import { Card } from 'antd';
+
+const MentionChannelCard = ({ height = 360 }) => {
+  const items = [
+    {
+      url: '',
+      icon: '',
+      alt: '뉴스 아이콘',
+      title: '<mark>머스크</mark>',
+      text: '일론 <mark>머스크</mark>',
+    },
+    {
+      url: '',
+      icon: '',
+      alt: '블로그 아이콘',
+      title: '향수 리뷰',
+      text: '<mark>머스크</mark>',
+    },
+  ];
+
+  return (
+    <Card
+      title="언급 원문"
+      style={{
+        borderRadius: 20,
+        width: '65%',
+        height,
+        overflow: 'hidden', // 카드 내부 요소가 넘치지 않게
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      bodyStyle={{
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1,
+        padding: '16px',
+      }}
+    >
+      {/* 스크롤 영역 */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+        }}
+      >
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          {items.map((item, idx) => (
+            <li key={idx} style={{ marginBottom: '12px' }}>
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                }}
+              >
+                <span>
+                  <img
+                    src={item.icon || 'https://via.placeholder.com/20'}
+                    alt={item.alt}
+                    width={20}
+                    height={20}
+                  />
+                </span>
+                <dl style={{ margin: 0 }}>
+                  <dt
+                    dangerouslySetInnerHTML={{ __html: item.title }}
+                    style={{ fontWeight: 'bold', marginBottom: 4 }}
+                  />
+                  <dd
+                    dangerouslySetInnerHTML={{ __html: item.text }}
+                    style={{ margin: 0, fontSize: 14, color: '#555' }}
+                  />
+                </dl>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* 버튼 영역 */}
+      <div style={{ paddingTop: '12px', textAlign: 'right' }}>
+        <button
+          type="button"
+          style={{
+            padding: '6px 12px',
+            backgroundColor: '#1677ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          자세히 보기
+        </button>
+      </div>
+    </Card>
+  );
+};
+
+export default MentionChannelCard;

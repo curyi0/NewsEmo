@@ -4,11 +4,11 @@ import axios from "/node_modules/.vite/deps/axios.js?v=27e8c257";
 const API_URL = "http://localhost:8000/companies/search";
 
 // ✅ createAsyncThunk로 비동기 액션 생성
-export const fetchCompanies = createAsyncThunk(
+export const fetchCompaniesByName = createAsyncThunk(
   "company/fetchCompanies",
-  async () => {
+  async (searchTerm) => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(`${API_URL}?name=${encodeURIComponent(searchTerm)}`);
       return response.data;
     } catch (error) {
       console.error("회사 데이터를 불러오는 중 오류 발생:", error);
@@ -16,27 +16,61 @@ export const fetchCompanies = createAsyncThunk(
     }
   }
 );
+// 산업 분야  별 검색
+export const fetchCompaniesByType = createAsyncThunk(
+  "company/fetchByType",
+  async (type) => {
+    try {
+      const response = await axios.get(`${API_URL}?type=${encodeURIComponent(type)}`);
+      return response.data;
+    } catch (error) {
+      console.error("회사 분야 검색 중 오류:", error);
+      throw error;
+    }
+  }
+);
 
-const companySlice = createSlice({
-  name: 'company',
+const companySearchSlice = createSlice({
+  name: 'companySearch',
   initialState: {
     list: [],
     status: "idle",
+    searchTerm: "",
+    searchType: "",
   },
-  reducers: {},
+  reducers: {
+    setSearchTerm: (state, action) => {
+      state.searchTerm = action.payload;
+    },
+    setSearchType: ( state, action)=>{
+      state.searchType= action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCompanies.pending, (state) => {
+      .addCase(fetchCompaniesByName.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchCompanies.fulfilled, (state, action) => {
+      .addCase(fetchCompaniesByName.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.list = action.payload;
       })
-      .addCase(fetchCompanies.rejected, (state) => {
+      .addCase(fetchCompaniesByName.rejected, (state) => {
+        state.status = "failed";
+      })
+        //  분야 검색 추가
+      .addCase(fetchCompaniesByType.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCompaniesByType.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.list = action.payload;
+      })
+      .addCase(fetchCompaniesByType.rejected, (state) => {
         state.status = "failed";
       });
   },
 });
 
-export default companySlice.reducer;
+export default companySearchSlice.reducer;
+export const { setSearchTerm, setSearchType } = companySearchSlice.actions;
