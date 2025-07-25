@@ -1,0 +1,39 @@
+import React from 'react';
+import { Card } from 'antd';
+
+const cardStyle = {
+  flex: '1 0 430px',            // 최소/최대 450px 기반으로 반응
+  maxWidth: 450,
+  minHeight: 130,
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+  borderRadius: '20px',
+};
+
+const MentionTopCard = ({ maxDate }) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '20px',           // 카드 간 간격
+        justifyContent: 'center', // 가운데 정렬
+      }}
+    >
+      <Card style={cardStyle}>
+        <div style={{ fontSize: '20px', color: '#5845ea', fontWeight: 'bold' }}>
+          {maxDate}
+        </div>
+        <div style={{ marginTop: 8 }}>언급량이 가장 많았던 날</div>
+      </Card>
+      <Card style={cardStyle}>카드 2</Card>
+      <Card style={cardStyle}>카드 3</Card>
+    </div>
+  );
+};
+
+export default MentionTopCard;

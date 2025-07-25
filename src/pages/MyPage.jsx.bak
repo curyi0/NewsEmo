@@ -1,0 +1,110 @@
+import React from 'react';
+//import './MyPage.css'; // 스타일 따로 분리해서 관리하세요 (선택)
+
+const MyPage = () => {
+  return (
+    <div id="wrap">
+      <main className="mypage-layout">
+        {/* 좌측 메뉴 */}
+        <section className="mypage-layout-left">
+          <div className="user-avatar">
+            <div className="user-avatar-thumb">
+              <div className="user-avatar-thumb-inner">
+                <img
+                  className="avatar-image"
+                  src="/images/default-profile.png"
+                  alt="프로필 이미지"
+                />
+              </div>
+              <label className="avatar-upload" htmlFor="upload-avatar">
+                <span className="avatar-upload-icon">📷</span>
+                <div className="avatar-upload-text">프로필 변경</div>
+                <input
+                  type="file"
+                  className="avatar-upload-file"
+                  id="upload-avatar"
+                  accept=".gif, .jpg, .png"
+                />
+              </label>
+            </div>
+            <div className="user-avatar-text1 user-real-name">사용자 이름</div>
+          </div>
+
+          <nav className="sliding-toggle-nav" id="mypage-nav">
+            <ul className="sliding-toggle-nav-depth1">
+              <li className="sliding-toggle-nav-item">
+                <div className="sliding-toggle-nav-depth2-wrap">
+                  <ul className="sliding-toggle-nav-depth2">
+                    <li className="sliding-toggle-nav-depth2-item">
+                      <a href="#">유닛 분석</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li className="sliding-toggle-nav-item">
+                <div className="sliding-toggle-nav-depth2-wrap">
+                  <ul className="sliding-toggle-nav-depth2">
+                    <li className="sliding-toggle-nav-depth2-item">
+                      <a href="#">구독 정보</a>
+                    </li>
+                    <li className="sliding-toggle-nav-depth2-item">
+                      <a href="#">결제 내역</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li className="sliding-toggle-nav-item active">
+                <a href="#">내 정보 관리</a>
+              </li>
+              <li className="sliding-toggle-nav-item">
+                <a href="#">1:1 문의</a>
+              </li>
+            </ul>
+          </nav>
+        </section>
+
+        {/* 우측 콘텐츠 */}
+        <section className="mypage-layout-contents">
+          <article>
+            <div className="contents-title-row">
+              <h3 className="contents-title">내 정보</h3>
+            </div>
+
+            <div className="myinfo-table">
+              <div className="form-row">
+                <div className="form-col form-label">아이디</div>
+                <div className="form-col form-input">example@email.com (소셜 회원)</div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-col form-label">연락처 이메일</div>
+                <div className="form-col form-input">user@email.com</div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-col form-label">직무</div>
+                <div className="form-col form-input">예: 마케팅</div>
+                <div style={{ marginLeft: 'auto' }}>
+                  <button type="button" className="vbtn2">내정보 수정하기</button>
+                </div>
+              </div>
+
+              <div
+                className="form-row"
+                style={{ borderTop: '1px solid #dbdbdb', marginTop: '2rem' }}
+              ></div>
+
+              <div className="stack direction-row justify-content-end" style={{ marginTop: '4rem' }}>
+                <a href="#" className="btn-withdrawal">
+                  회원탈퇴
+                </a>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+export default MyPage;

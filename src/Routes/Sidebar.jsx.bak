@@ -1,0 +1,75 @@
+import React from 'react';
+import { Layout, Menu } from 'antd';
+import {
+  FileTextOutlined,
+  FolderOpenOutlined,
+  PieChartOutlined,
+} from '@ant-design/icons';
+import { Link, useLocation } from 'react-router-dom';
+
+const { Sider } = Layout;
+
+const Sidebar = () => {
+  const location = useLocation();
+
+  const items = [
+    {
+      key: '/semi/company', //company?
+      icon: <FileTextOutlined />,
+      label: '기업 관련',
+      children: [
+        {
+          key: '/semi/company',
+          label: '기업 정보',
+        },
+        {
+          key: '/semi/companyreview',
+          label: '기업 리뷰 분석',
+        },
+      ],
+    },
+    {
+      key: 'social',
+      icon: <FolderOpenOutlined />,
+      label: '소셜 분석',
+      children: [
+        {
+          key: '/semi/mention',
+          label: <Link to="/semi/mention">언급량 분석</Link>,
+        },
+        {
+          key: '/semi/association',
+          label: <Link to="/semi/association">연관어 분석</Link>,
+        },
+        {
+          key: '/semi/reputation',
+          label: <Link to="/semi/reputation">긍/부정 분석</Link>,
+        },
+      ],
+    },
+    {
+      key: 'compare',
+      icon: <PieChartOutlined />,
+      label: '비교 분석',
+      children: [
+        { key: '/semi/compare/mention', label: '언급량 비교' },
+        { key: '/semi/compare/association', label: '연관어 비교' },
+        { key: '/semi/compare/reputation', label: '긍/부정 비교' },
+      ],
+    },
+  ];
+
+  return (
+    <Sider className="site-layout-background" width={240}>
+      <Menu
+        mode="inline"
+        selectedKeys={[location.pathname]}
+        defaultOpenKeys={['social', 'compare']}
+        style={{ height: '100vh', borderRight: 0 }}
+        items={items}
+      />
+    </Sider>
+  );
+};
+
+export default Sidebar;

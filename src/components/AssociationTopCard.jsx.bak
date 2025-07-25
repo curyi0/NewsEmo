@@ -1,0 +1,49 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Card } from 'antd';
+
+const cardStyle = {
+  flex: '1 0 430px',            // ✅ 최소/최대 385px 기반으로 반응
+  maxWidth: 450,
+  minHeight: 130,
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  textAlign: 'center',
+  borderRadius: '20px',
+};
+
+const AssociationTopCard = () => {
+  const relatedKeywords = useSelector((state) => state.association.relatedKeywords); // store에서 가져옴
+
+  const topKeywordObj = relatedKeywords?.reduce(
+    (max, curr) => (curr.value > (max?.value ?? -Infinity) ? curr : max),
+    null
+  );
+
+  const topKeyword = topKeywordObj?.name || '데이터 없음';
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '20px',
+        justifyContent: 'center',
+      }}
+    >
+      <Card style={cardStyle}>
+        <div style={{ fontSize: '20px', color: '#5845ea', fontWeight: 'bold' }}>
+          {topKeyword}
+        </div>
+        <div style={{ marginTop: 8 }}>연관어 Top 1</div>
+      </Card>
+      <Card style={cardStyle}>카드 2</Card>
+      <Card style={cardStyle}>카드 3</Card>
+    </div>
+  );
+};
+
+export default AssociationTopCard;
