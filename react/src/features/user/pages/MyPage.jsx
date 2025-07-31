@@ -16,6 +16,7 @@ const MyPage = () => {
     const [resendCooldown, setResendCooldown] = useState(0);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    // const { hasActiveSubscription } = useSubscription();
 
     useEffect(() => {
     dispatch(fetchUserProfileThunk())
@@ -120,6 +121,15 @@ const MyPage = () => {
         {/* <LinkGoogleButton /> */}
         {/* 사용자 정보 수정 폼 */}
         <UserEditform />
+
+        {/* <section>
+            <h2>구독 관리</h2>
+            {hasActiveSubscription ? (
+                <Link to='/subscription/manage'>구독 관리하기</Link>
+            ) : (
+                <Link to='/subscription'>구독하기</Link>
+            )}
+        </section> */}
     </div>
   )
 }
