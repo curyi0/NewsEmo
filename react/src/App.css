@@ -19,12 +19,13 @@ margin-right:  100px;  */
   align-items: flex-start;
 }
 main {
-  padding-bottom: 200px;
-  margin: 20px;
+  /* padding-bottom: 50px; */
+  margin-top: 20px;
+  margin-left: 30px;
 }
 /* 내비게이션 바 */
 nav {
-  background-color: #8590bd;
+  background-color: rgba(246, 202, 250, 0.904);
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   position: sticky;
@@ -59,7 +60,7 @@ nav a {
 }
 
 nav a:hover {
-  color: #b9f39f; /* 부트스트랩 느낌의 민트 색상 */
+  color: #232fdd; /* 부트스트랩 느낌의 민트 색상 */
 }
 
 /* 검색창 크기 */
@@ -153,28 +154,34 @@ button:focus-visible {
   transition: background-color 0.3s;
 }
 
-.search-button {
+/* .search-button {
   background-color: #007bff;
   color: white;
 }
 
 .search-button:hover {
   background-color: #0056b3;
-}
-
+} */
+/* 배경 이미지 설정 */
 .main-bg{
-  width: 100%;
-  height: 350px; /* 원하는 높이 */
-  background-image: url('https://plus.unsplash.com/premium_vector-1682309287225-c4ab96e5b8d2?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  /* width: 1200px; */
+  height: 450px; /* 원하는 높이 */
+  /* background-image: url('https://plus.unsplash.com/premium_vector-1682309287225-c4ab96e5b8d2?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); */
   /* background-image: url('https://images.pexels.com/photos/20160209/pexels-photo-20160209.jpeg?_gl=1*1oz3exo*_ga*NTEyNzI0ODU5LjE3NTMyNTk5MTE.*_ga_8JE65Q40S6*czE3NTMyNTk5MTEkbzEkZzEkdDE3NTMyNjAwMTckajI0JGwwJGgw'); */
-  background-size: cover;
+  background-image: url('https://plus.unsplash.com/premium_vector-1682308497193-45030a6b4822?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size: 100% 130% ;
+  /* background-size: contain; */
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 0px;
   /* margin-bottom: 12px; */
   display: flex;
+  flex-direction: column;
+  margin-top: 0px;
   align-items: center;
   justify-content: center;
+  /* padding: 40px 20px  */
+  
   /* 필요시 텍스트 중앙정렬 등 추가 */
 }
 
@@ -182,7 +189,8 @@ button:focus-visible {
 
 /* 카테고리 목록 링크 호버 효과 */
 .category-list li a:hover {
-  color: #00d1b2;
+  color: #2d00d1;
+  background-color: #007bff;
 }
 
 /* 화면 슬라이드 */
@@ -228,16 +236,3 @@ button:focus-visible {
   font-size: 0.9rem;
   color: #666;
 }
-
-/* .news-section {
-  margin-top: 50px;
-  padding: 20px;
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.news-article p, .contact-info p {
-  margin: 10px 0;
-  color: #333;
-} */
