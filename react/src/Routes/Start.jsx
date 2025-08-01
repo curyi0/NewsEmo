@@ -1,75 +1,115 @@
 import Wordcloud from "react-d3-cloud"
+import React, { useState } from 'react';
+// import { SearchBar } from '../App'
 import Ranking from "../components/Ranking"
-import React from 'react';
+import { fetchCompaniesByName, setSearchTerm, fetchCompaniesByType } from '../redux/reducerSlices/companySearchSlice';
+
 
 import { Carousel } from 'react-bootstrap';
 import kakaoImg from '../images/kakao.png';
 import kiaImg from '../images/kia.png';
 import samsungImg from '../images/samsung.png';
 import '../CSS/carousel.css';
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 
-const words = [
-  { text: '카카오', value: 200 },
-  { text: 'Google', value: 80 },
-  { text: '네이버', value: 40 },
-  { text: 'Amazon', value: 60 },
-  { text: 'Samsung', value: 55 }, 
-  { text: 'sns', value: 40 },
-  { text: '롯데', value: 80 },
-  { text: 'yahoo', value: 80 },
-  { text: '다음', value: 40 },
-]
-
-const Start= () => {
+// const words = [
+//   { text: '카카오', value: 200 },
+//   { text: 'Google', value: 80 },
+//   { text: '네이버', value: 40 },
+//   { text: 'Amazon', value: 60 },
+//   { text: 'Samsung', value: 55 }, 
+//   { text: 'sns', value: 40 },
+//   { text: '롯데', value: 80 },
+//   { text: 'yahoo', value: 80 },
+//   { text: '다음', value: 40 },
+// ]
+// SearchBar 정의 부분
+const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => {
+  return (<>
+    <div className="radio-group mt-4 my-2 flex gap-6 items-center text-black font-sans font-semibold">
+      <label className="flex items-center gap-2 ">
+        <input
+          type="radio"
+          name="search"
+          value="name"
+          checked={searchType === 'name'}
+          onChange={e => setSearchType(e.target.value)}
+        />
+        기업이름
+      </label>
+      <label className="flex items-center gap-2">
+        <input
+          type="radio"
+          name="search"
+          value="type"
+          checked={searchType === 'type'}
+          onChange={e => setSearchType(e.target.value)}
+        />
+        분야
+      </label>
+    </div>
+    <div className="search-bar-container">
+      <form onSubmit={onSubmit} className="search-form">
+        <input
+          type="text"
+          placeholder="회사명 입력하세요..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          disabled={loading}
+          className="search-input"
+          required
+        />
+        <button
+          type="submit"
+          className="search-button"
+          disabled={loading}
+        >
+          {loading ? "검색중..." : "검색"}
+        </button>
+      </form>
+    </div>
+  </>
+  );
+});
   
-  const CompanyLists = ()=>(
+const Start = () => {
+  const [searchTerm, setSearchTerms] = useState("");
+  const [searchType, setSearchType] = useState("name")
+
+  const navigate= useNavigate()
+  const dispatch= useDispatch()
+   const handleSubmit = (e) => {
+    // useCallback((e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) 
+      dispatch(setSearchTerm(searchTerm)); // 가져옴
+    //   // (searchTerm.trim());
+      dispatch(fetchCompaniesByName(searchTerm.trim()))   // 검색어 찾기
+    // navigate("/semi")
+
+    if (!searchTerm.trim()) return;
+
+    dispatch(setSearchTerm(searchTerm));
+
+    if (searchType === "name") {
+      dispatch(fetchCompaniesByName(searchTerm.trim()));
+    }
+    else if (searchType === "type") {
+      dispatch(fetchCompaniesByType(searchTerm.trim()));
+    }
+    navigate("/info")
+  }
+
+  // CompanyLists 컴포넌트 정의
+  const CompanyLists = () => (
     <section>
-      <h4 className="text-xl font-bold mb-6" >기업 분류 목록</h4>
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {dummyCompanies.map((company) => (
-          <div
-            key={company.id}
-            className="border p-4 rounded-lg hover:shadow-lg transition-shadow cursor-pointer"
-          >
-            <h3 className="text-lg font-semibold mb-2">{company.name}</h3>
-            <button  className="text-gray-600">카테고리: {company.category}</button>
-          </div>
-        ))}
-      </div> */}
-
-
-    </section>
-    
-  )
-  
-  const GraphSection = () => (
-    <section className="mt-12 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">그래프</h2>
-      {/* <h3 className="text-lg font-semibold mb-4">키워드 분포</h3> */}
-      <div className="h-64 bg-gray-100 rounded-md flex items-center justify-center text-gray-500">
-        {/* 향후 그래프 라이브러리로 교체  chart.js, 파이썬 시각화 api*/}
-        <div style={{ width: '100%', height: '400px', marginTop: '0px' ,marginBottom: '10px', paddingBottom: '10px' }}>
-          <h3>키워드 클라우드</h3>
-          <Wordcloud 
-            data={words}
-            width={400}
-            height={200}
-            font="Impact"
-            fontStyle="normal"
-            fontWeight="normal"
-            fontSize={(word) => Math.log2(word.value) * 3}
-            spiral="archimedean"
-            rotate={(word) => word.value % 360}
-            padding={0}
-            margin={0}
-            random={Math.random}
-          />
-        </div>
-      </div>
+      {/* 기업 분류 목록 섹션 */}
     </section>
   );
-  
+
+  //최근 이슈기업 슬라이더 구역
   function ImageSlider() {
     const images = [
       { src: kakaoImg, alt: '카카오' },
@@ -78,29 +118,28 @@ const Start= () => {
     ];
 
     return (
-      <div className="my-12">
+      <div className="my-12 font-sans">
         <h2 className="text-xl font-bold text-left mb-4">주요 기업 소식( 최근 이슈 기업)</h2>
         <div className="flex justify-center">
           <div className="w-full max-w-3xl">
             <Carousel>
               {images.map((image, index) => (
                 <Carousel.Item key={index}>
-                  {/* ▼▼▼ 이미지 크기 제어를 위한 컨테이너 div 추가 ▼▼▼ */}
                   <div
                     style={{
-                      height: '250px', // 1. 슬라이더의 높이를 원하는 크기로 지정 (예: 300px)
+                      height: '250px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      backgroundColor: '#f8f9fa', // 2. 이미지 주변에 보일 배경색
+                      backgroundColor: '#84b0dbff',
                     }}
                   >
                     <img
-                      className="d-block" // w-100 클래스는 제거합니다.
+                      className="d-block"
                       style={{
-                        maxHeight: '80%', // 3. 컨테이너 높이의 80%를 최대 높이로 설정
-                        maxWidth: '80%',  // 4. 컨테이너 너비의 80%를 최대 너비로 설정
-                        objectFit: 'contain', // 5. 이미지가 잘리거나 찌그러지지 않고 안에 모두 표시
+                        maxHeight: '80%',
+                        maxWidth: '80%',
+                        objectFit: 'contain',
                       }}
                       src={image.src}
                       alt={image.alt}
@@ -117,12 +156,28 @@ const Start= () => {
 
   return (
     <>
-      <h2>메인</h2>
-      <Ranking/>
-      <CompanyLists/>
-      <ImageSlider/>
-      
-      {/* <GraphSection/> */}
+      <div className="font-sans">
+        <div className="main-bg relative h-[60vh] rounded-lg overflow-hidden mb-12">
+          <div className="relative z-7 flex flex-col justify-end items-center h-full text-white p-8">
+            <p className="text-xl md:text-2xl font-medium text-black  to-gray-800/60 px-6 py-3 rounded-lg shadow-lg backdrop-blur-md max-w-2xl text-center leading-snug">
+                <span className="font-bold text-black-200 mt- text-2xl">데이터</span>로 읽는&nbsp;
+                <span className="text- font-semibold text-2xl">기업의 감정</span>,<br className="hidden md:inline" />
+                &nbsp;
+                <span className="text-purple-800 font-bold underline decoration-purple-400/70">인사이트</span>도 한 눈에,
+              </p>
+              <SearchBar
+            searchTerm={searchTerm} // `searchTerm` prop을 전달했지만
+            setSearchTerm={setSearchTerms} // 
+            searchType={searchType}
+            setSearchType={setSearchType}
+            onSubmit={handleSubmit} // `onSubmit` prop은 (A)에서 잘 받고 사용합니다.
+            ></SearchBar>
+          </div>
+        </div>
+        <Ranking />
+        <CompanyLists />
+        <ImageSlider />
+      </div>
     </>
   )
 }
