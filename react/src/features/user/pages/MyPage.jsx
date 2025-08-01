@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import {api} from '@shared/utils/api'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import UserEditform from '../components/UserEditform'
 // import LinkGoogleButton from '../components/LinkGoogleButton'
 import OAuth2LinkSection from '../../auth/components/OAuth2LinkSection'
 import { fetchUserProfileThunk } from '../store/userThunk'
 import { useDispatch, useSelector } from 'react-redux'
 import { emailService } from '../../email/services/emailService'
+import { useSubscription } from '../../subscription/hooks/useSubscription'
 
 const MyPage = () => {
     const user = useSelector(state => state.user.profile)
@@ -16,7 +17,7 @@ const MyPage = () => {
     const [resendCooldown, setResendCooldown] = useState(0);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    // const { hasActiveSubscription } = useSubscription();
+    const { hasActiveSub } = useSubscription();
 
     useEffect(() => {
     dispatch(fetchUserProfileThunk())
@@ -122,14 +123,14 @@ const MyPage = () => {
         {/* 사용자 정보 수정 폼 */}
         <UserEditform />
 
-        {/* <section>
+        <section>
             <h2>구독 관리</h2>
-            {hasActiveSubscription ? (
+            {hasActiveSub ? (
                 <Link to='/subscription/manage'>구독 관리하기</Link>
             ) : (
                 <Link to='/subscription'>구독하기</Link>
             )}
-        </section> */}
+        </section>
     </div>
   )
 }

@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login"
 import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "../features/auth/store/authThunk";
+import SubscriptionStatus from '@features/subscription/components/SubscriptionStatus'
 
 const Header = ({  toRegister, handleNavigation, SearchBar }) => {
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
@@ -68,6 +69,7 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               <li><Link to="/PageA" onClick={() => handleNavigation("pageA")}>PageA</Link></li>
               <li><Link to="/info" onClick={() => handleNavigation("info")}>Info</Link></li>
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
+              <li><Link to="/subscription">구독하기</Link></li>
               {isAuthenticated && (
                 <li><Link to="/mypage">마이페이지</Link></li>
               )}
@@ -79,6 +81,7 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
 
                   {isAuthenticated ? (
                     <>
+                      <SubscriptionStatus />
                       <button onClick={handleLogout}>로그아웃</button>
                     </>   
                   ) : (

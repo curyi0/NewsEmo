@@ -35,6 +35,7 @@ import { fetchCompaniesByName, fetchCompaniesByType, setSearchTerm } from '../..
 import Chatbot from '../../ChatBot'
 import { Radio } from 'antd'
 import SubscriptionManagement from '../../features/subscription/pages/SubscriptionManagement'
+import SubscriptionPlans from '../../features/subscription/pages/SubscriptionPlans'
 
 // SearchBar 정의 부분
 const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => { // (A) 여기서 받는 props는 onSubmit, loading, navigate 뿐입니다.
@@ -217,6 +218,7 @@ const AppRouter = () => {
                     <Route path="comparekeyword" element={<CompareKeyword/>}/>
                 </Route>
                 {/* 구독관련 */}
+                <Route path="/subscription" element={<SubscriptionPlans />} />
                 <Route path="/subscription/manage" element={<ProtectedSubscriptionManagement />} />
             </Routes>
             <Footer />

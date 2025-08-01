@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router'
 const SubscriptionManagement = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    // redux에서 직접 가져오는 state
     const {
         subscriptionDetails,
         isActive,
@@ -19,11 +21,12 @@ const SubscriptionManagement = () => {
     const [showCancelConfirm, setShowCancelConfirm] = useState(false)
     const [showUnsubConfirm, setShowUnsubConfirm] = useState(false)
 
+    // 컴포넌트 마운트시에만 구독 상세 정보 조회
     useEffect(() => {
-        if (isActive) {
+        if (isActive && !subscriptionDetails && !detailsLoading) {
             dispatch(fetchSubDetailsThunk())
         }
-    }, [dispatch, isActive])
+    }, [dispatch, isActive, subscriptionDetails, detailsLoading])
 
     useEffect(() => {
         if (successMessage) {
@@ -34,15 +37,15 @@ const SubscriptionManagement = () => {
         }
     }, [successMessage, dispatch])
 
-    const handleCancel = async () => {
-        await dispatch(cancelSubThunk())
+    const handleCancel = () => {
+        dispatch(cancelSubThunk())
         setShowCancelConfirm(false)
         //상세정보 다시 조회
         dispatch(fetchSubDetailsThunk())
     }
 
-    const handleUnsubscribe = async () => {
-        await dispatch(unSubNowThunk())
+    const handleUnsubscribe = () => {
+        dispatch(unSubNowThunk())
         setShowUnsubConfirm(false)
     }
 
@@ -66,6 +69,9 @@ const SubscriptionManagement = () => {
             <div>구독 정보를 불러오는 중...</div>
         )
     }
+
+    // console.log('isActive:', isActive)
+    // console.log('subscriptionDetails:', subscriptionDetails)
 
     if (!isActive || !subscriptionDetails) {
         return (

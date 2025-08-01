@@ -1,28 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { cancelSubThunk, checkSubStatThunk, createSubThunk, fetchSubDetailsThunk, unSubNowThunk } from "./subscriptionThunk";
 
+/**
+ * @typedef {import('./subscriptionTypes').subscriptionDetails} SubDetails
+ */
+const initialState = {
+    // 구독상태
+    isActive: false,
+    /** @type {SubDetails|null} */
+    subscriptionDetails: null,
+
+    //로딩상태
+    loading: false,
+    createLoading: false, // 구독생성중 로딩
+    detailsLoading: false, // 구독조회중 로딩
+
+    //에러 상태
+    error: null,
+    createError: null, // 구독생성중 에러
+
+    //성공메세지
+    successMessage: null,
+}
+
 const subscriptionSlice = createSlice({
     name: 'subscription',
-    initialState: {
-        // 구독 상태
-        isActive: false,
-        subscriptionDetails: null,
-
-        // 로딩 상태
-        loading: false,
-        createLoading: false,
-        detailsLoading: false,
-
-        // 에러 상태
-        error: null,
-        createError: null,
-
-        // 성공 메세지
-        successMessage: null,
-    },
+    initialState,
     reducers: {
         clearError: (state) => {
-            state.err = null
+            state.error = null
             state.createError = null
         },
         clearSuccessMessage: (state) => {
@@ -61,7 +67,7 @@ const subscriptionSlice = createSlice({
             })
             .addCase(checkSubStatThunk.fulfilled, (state, action) => {
                 state.loading = false
-                state.isActive = true
+                state.isActive = action.payload?.isActive ?? false
             })
             .addCase(checkSubStatThunk.rejected, (state, action) => {
                 state.loading = false
@@ -75,7 +81,7 @@ const subscriptionSlice = createSlice({
                 state.error = null
             })
             .addCase(fetchSubDetailsThunk.fulfilled, (state, action) => {
-                state.detailsLoading = true
+                state.detailsLoading = false
                 state.subscriptionDetails = action.payload
                 state.isActive = action.payload?.isActive || false
             })

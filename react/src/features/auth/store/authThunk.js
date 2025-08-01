@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { authService } from '../services/authService'
 import { setUser, setLoading, setError, clearAuth } from './authSlice'
 import { ApiError } from '../../../shared/errors/ApiError'
+import { fetchSubDetailsThunk } from '../../subscription/store/subscriptionThunk'
 
 export const loginThunk = createAsyncThunk(
   'auth/login',
@@ -10,6 +11,7 @@ export const loginThunk = createAsyncThunk(
       dispatch(setLoading(true))
       const user = await authService.loginAndFetchUser(credentials)
       dispatch(setUser(user))
+      dispatch(fetchSubDetailsThunk())
       return user
     } catch (err) {
       dispatch(setError(err.message))
@@ -81,6 +83,7 @@ export const restoreUserThunk = createAsyncThunk(
             const user = await authService.tryRestoreUser()
             if (user) {
                 dispatch(setUser(user))
+                dispatch(fetchSubDetailsThunk())
             } else {
                 dispatch(clearAuth())
             }
