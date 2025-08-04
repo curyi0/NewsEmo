@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { cancelSubThunk, fetchSubDetailsThunk, unSubNowThunk } from '../store/subscriptionThunk'
+import { cancelSubThunk, fetchSubDetailsThunk, revertCancelThunk, unSubNowThunk } from '../store/subscriptionThunk'
 import { clearError, clearSuccessMessage } from '../store/subscriptionSlice'
 import { useNavigate } from 'react-router'
 
@@ -20,6 +20,7 @@ const SubscriptionManagement = () => {
 
     const [showCancelConfirm, setShowCancelConfirm] = useState(false)
     const [showUnsubConfirm, setShowUnsubConfirm] = useState(false)
+    const [showRevertConfirm, setShowRevertConfirm] = useState(false)
 
     // 컴포넌트 마운트시에만 구독 상세 정보 조회
     useEffect(() => {
@@ -42,6 +43,19 @@ const SubscriptionManagement = () => {
         setShowCancelConfirm(false)
         //상세정보 다시 조회
         dispatch(fetchSubDetailsThunk())
+    }
+
+    const handleRevertCancel = () => {
+        //dispatch(subscriptionSlice.actions.setStatusActive())
+        dispatch(revertCancelThunk())
+            .unwrap()
+            .then(() => {
+                setShowRevertConfirm(false)
+                dispatch(fetchSubDetailsThunk())
+            })
+            .catch(()=>{
+                setShowRevertConfirm(false)
+            })
     }
 
     const handleUnsubscribe = () => {
@@ -148,12 +162,23 @@ const SubscriptionManagement = () => {
                 <label>
                     상태
                 </label>
-                <span className={`${subscriptionDetails.isActive
-                    ? 'bg-green-100 test-green-800'
-                    : 'bg-red-100 text-red-800'
-                    }`}>
-                    {subscriptionDetails.isActive ? '활성' : '비활성'}
-                </span>
+                <div>
+                    <span className={`${
+                        subscriptionDetails.status === 'ACTIVE' ? 'bg-green-100 text-green-800'
+                        : subscriptionDetails.status === 'CANCELLED' ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                        }`}>
+                        {subscriptionDetails.status === 'ACTIVE' && '활성'}
+                        {subscriptionDetails.status === 'CANCELLED' && '해지 예약됨'}
+                        {subscriptionDetails.status === 'EXPIRED' && '만료됨'}
+                    </span>
+                    {subscriptionDetails.status === 'CANCELLED' && (
+                        <button onClick={()=> setShowRevertConfirm(true)}>
+                            해지 예약 취소
+                        </button>
+                    )}
+                </div>
+                
             </div>
 
             {/* 구독 관리 버튼 */}
@@ -189,6 +214,20 @@ const SubscriptionManagement = () => {
                             onClick={handleCancel}
                             disabled={loading}
                         >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/*해지 예약 취소 확인 모달 */}
+            {showRevertConfirm && (
+                <div>
+                    <h3>해지 예약 취소</h3>
+                    <p>해지 예약을 취소하시겠습니까? 구독은 계속 유지됩니다.</p>
+                    <div>
+                        <button onClick={()=>setShowRevertConfirm(false)}>취소</button>
+                        <button onClick={handleRevertCancel} disabled={loading}>
                             확인
                         </button>
                     </div>

@@ -8,6 +8,7 @@ import { fetchUserProfileThunk } from '../store/userThunk'
 import { useDispatch, useSelector } from 'react-redux'
 import { emailService } from '../../email/services/emailService'
 import { useSubscription } from '../../subscription/hooks/useSubscription'
+import { checkSubStatThunk } from '../../subscription/store/subscriptionThunk'
 
 const MyPage = () => {
     const user = useSelector(state => state.user.profile)
@@ -37,6 +38,11 @@ const MyPage = () => {
             return () => clearTimeout(timer);
         }
     }, [resendCooldown]);
+
+    //구독 상태 조회
+    useEffect(()=> {
+        dispatch(checkSubStatThunk())
+    }, [dispatch])
 
     // const fetchUserInfo = async () => {
     //     try {

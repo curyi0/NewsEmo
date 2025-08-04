@@ -17,9 +17,13 @@ export const createSubThunk = thunk(
 // 구독 상태 확인
 export const checkSubStatThunk = thunk(
     'subscription/checkStatus',
-    async (_, { rejectWithValue }) => {
+    async (_, { dispatch, rejectWithValue }) => {
         try {
             const data = await subService.checkSubStatService()
+            console.log(data)
+            if (data.isActive) {
+                dispatch(fetchSubDetailsThunk())
+            }
             return data
         } catch (err) {
             return rejectWithValue(err.message || '구독 상태 확인 실패')
@@ -33,8 +37,10 @@ export const fetchSubDetailsThunk = thunk(
     async (_, { rejectWithValue }) => {
         try {
             const data = await subService.fetchSubDetailsService()
+            console.log('🔵 fetchSubDetailsThunk 응답:', data)
             return data
         } catch (err) {
+            console.error('🔴 fetchSubDetailsThunk 에러:', err)
             return rejectWithValue(err.message || '구독 상세 조회 실패')
         }
     }
@@ -49,6 +55,18 @@ export const cancelSubThunk = thunk(
             return data
         } catch (err) {
             return rejectWithValue(err.message || '구독 해지 예약 실패')
+        }
+    }
+)
+
+export const revertCancelThunk = thunk(
+    'subscription/revertCancel',
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await subService.revertCancelService()
+            return data
+        } catch (err) {
+            return rejectWithValue(err.message || '해지 취소 실패')
         }
     }
 )

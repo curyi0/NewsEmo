@@ -40,6 +40,11 @@ const subscriptionSlice = createSlice({
             state.error = null
             state.createError = null
             state.successMessage = null
+        },
+        setSubscriptionActive: (state, action) => {
+            state.isActive = true
+            state.subscriptionDetails = action.payload
+            state.successMessage = '구독이 활성화되었습니다.'
         }
     },
     extraReducers: (builder) => {
@@ -66,6 +71,7 @@ const subscriptionSlice = createSlice({
                 state.error = null
             })
             .addCase(checkSubStatThunk.fulfilled, (state, action) => {
+                console.log('🟢 checkSubStatThunk.fulfilled payload:', action.payload)
                 state.loading = false
                 state.isActive = action.payload?.isActive ?? false
             })
@@ -81,9 +87,10 @@ const subscriptionSlice = createSlice({
                 state.error = null
             })
             .addCase(fetchSubDetailsThunk.fulfilled, (state, action) => {
+                console.log('🟢 fetchSubDetailsThunk.fulfilled payload:', action.payload)
                 state.detailsLoading = false
                 state.subscriptionDetails = action.payload
-                state.isActive = action.payload?.isActive || false
+                state.isActive = action.payload?.active || false
             })
             .addCase(fetchSubDetailsThunk.rejected, (state, action) => {
                 state.detailsLoading = false
@@ -127,5 +134,5 @@ const subscriptionSlice = createSlice({
     }
 })
 
-export const { clearError, clearSuccessMessage, resetSubscriptionState } = subscriptionSlice.actions
+export const { clearError, clearSuccessMessage, resetSubscriptionState, setSubscriptionActive } = subscriptionSlice.actions
 export default subscriptionSlice.reducer

@@ -21,7 +21,7 @@ export const subscriptionService = {
 
     fetchSubDetailsService: async () => {
         try {
-            const res = await subApi.fetchSubDetails()
+            const res = await subApi.fetchSubDetailsApi()
             return res.data
         } catch (err) {
             throw err.response?.data || err
@@ -31,6 +31,15 @@ export const subscriptionService = {
     cancelSubService: async () => {
         try {
             const res = await subApi.cancelSubApi()
+            return res.data
+        } catch (err) {
+            throw err.response?.data || err
+        }
+    },
+
+    revertCancelService: async () => {
+        try {
+            const res = await subApi.revertCancelApi()
             return res.data
         } catch (err) {
             throw err.response?.data || err

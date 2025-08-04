@@ -17,7 +17,8 @@ const store = configureStore({
         user,
         subscription
         // info
-    }
+    },
+    devTools: true,
 });
 
 export default store

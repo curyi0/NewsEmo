@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { PLAN_TYPES, PLAN_INFO } from '@features/subscription/services/subscriptionService'
 import { clearError, clearSuccessMessage } from '@features/subscription/store/subscriptionSlice'
 import { checkSubStatThunk, createSubThunk } from '@features/subscription/store/subscriptionThunk'
+import { api } from '../../../shared/utils/api'
+import { setSubscriptionActive } from '../store/subscriptionSlice'
 
 const SubscriptionPlans = () => {
     const dispatch = useDispatch()
@@ -16,6 +18,7 @@ const SubscriptionPlans = () => {
     } = useSelector(state => state.subscription)
     const [ selectedPlan, setSelectedPlan ] = useState(null)
     const [ showConfirm, setShowConfirm ] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         // 구독 상태 확인
@@ -35,6 +38,63 @@ const SubscriptionPlans = () => {
     const handlePlanSelect = (planType) => {
         setSelectedPlan(planType)
         setShowConfirm(true)
+    }
+
+    const generateMerchantUid = () => {
+        return `order_${new Date().getTime()}_${Math.floor(Math.random() * 1000)}`
+    }
+
+    // 아임포트 결제 호출
+    const handlePay = () => {
+        if (!selectedPlan) return
+        const IMP = window.IMP
+        IMP.init('imp75507553')
+
+        const merchantUid = generateMerchantUid()
+
+        const planInfo = PLAN_INFO[selectedPlan]
+        setLoading(true)
+
+        IMP.request_pay(
+            {
+                pg: 'uplus',
+                pay_method: 'card',
+                merchant_uid: merchantUid,
+                name: `${planInfo.name} 구독 결제`,
+                amount: planInfo.price,
+                buyer_email: 'chlorella71@naver.com',
+                buyer_name: 'chlorella71',
+            },
+            async (rsp) => {
+                if (rsp.success) {
+                    console.log('아임포트 결제 성공: ', rsp)
+                    try {
+                        // 서버에 결제 완료 알림
+                        const res = await api.post('/payments/complete', {
+                            impUid: rsp.imp_uid,
+                            merchantUid: rsp.merchant_uid,
+                            amount: rsp.paid_amount,
+                            planType: selectedPlan.toUpperCase(),
+                        })
+                        console.log('서버 결제 처리 결과: ', res.data)
+                        const subscription = res.data.subscription
+                        dispatch(setSubscriptionActive(subscription))
+                        alert('결제가 완료되었습니다.')
+                        navigate('/subscription/manage')
+                    } catch (err) {
+                        console.error('서버 결제 처리 실패: ', err)
+                        alert('서버 결제 처리에 실패했습니다.')
+                    } finally {
+                        setLoading(false)
+                        setShowConfirm(false)
+                    }
+                } else {
+                    console.error('결제 실패: ', rsp.error_msg)
+                    alert('결제 실패: ' + rsp.error_msg)
+                    setLoading(false)
+                }
+            }
+        )
     }
 
     const handleSubscribe = async () => {
@@ -179,9 +239,13 @@ const SubscriptionPlans = () => {
                         <button onClick={() => setShowConfirm(false)}>
                             취소
                         </button>
-                        <button
+                        {/* <button
                             onClick={handleSubscribe}                    >
                             {createLoading ? '처리 중...' : '구독하기'}
+                        </button> */}
+                        <button
+                            onClick={handlePay} disabled={loading}                    >
+                            {loading ? '처리 중...' : '구독하기'}
                         </button>
                     </div>               
                 </div>

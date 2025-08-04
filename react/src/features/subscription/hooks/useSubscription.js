@@ -6,6 +6,7 @@ export const useSubscription = () => {
 
     return {
         ...subState,
+        subDetails: subState.subscriptionDetails,
         hasActiveSub: subState.isActive,
         isSubLoading: subState.loading || subState.detailsLoading,
         subError: subState.error || subState.createError,

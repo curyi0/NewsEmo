@@ -69,7 +69,7 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               <li><Link to="/PageA" onClick={() => handleNavigation("pageA")}>PageA</Link></li>
               <li><Link to="/info" onClick={() => handleNavigation("info")}>Info</Link></li>
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
-              <li><Link to="/subscription">구독하기</Link></li>
+              {/* <li><Link to="/subscription">구독하기</Link></li> */}
               {isAuthenticated && (
                 <li><Link to="/mypage">마이페이지</Link></li>
               )}

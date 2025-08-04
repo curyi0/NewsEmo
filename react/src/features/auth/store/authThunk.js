@@ -2,7 +2,8 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { authService } from '../services/authService'
 import { setUser, setLoading, setError, clearAuth } from './authSlice'
 import { ApiError } from '../../../shared/errors/ApiError'
-import { fetchSubDetailsThunk } from '../../subscription/store/subscriptionThunk'
+import { checkSubStatThunk, fetchSubDetailsThunk } from '../../subscription/store/subscriptionThunk'
+import { resetSubscriptionState } from '../../subscription/store/subscriptionSlice'
 
 export const loginThunk = createAsyncThunk(
   'auth/login',
@@ -11,7 +12,13 @@ export const loginThunk = createAsyncThunk(
       dispatch(setLoading(true))
       const user = await authService.loginAndFetchUser(credentials)
       dispatch(setUser(user))
-      dispatch(fetchSubDetailsThunk())
+
+      //구독상태확인
+      const statusAction = await dispatch(checkSubStatThunk())
+      const status = statusAction.payload
+      if (status?.isActive) {
+        dispatch(fetchSubDetailsThunk())
+      }
       return user
     } catch (err) {
       dispatch(setError(err.message))
@@ -83,9 +90,16 @@ export const restoreUserThunk = createAsyncThunk(
             const user = await authService.tryRestoreUser()
             if (user) {
                 dispatch(setUser(user))
-                dispatch(fetchSubDetailsThunk())
+                const statusAction = await dispatch(checkSubStatThunk())
+                const status = statusAction.payload
+                console.log(statusAction.payload)
+                if (status?.isActive) {
+                  const detailsAction = await dispatch(fetchSubDetailsThunk())
+                  console.log('fetchSubDetailsThunk 결과:', detailsAction)
+                }    
             } else {
                 dispatch(clearAuth())
+                dispatch(resetSubscriptionState())
             }
         return user
         } finally {

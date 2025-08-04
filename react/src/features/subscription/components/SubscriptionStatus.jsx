@@ -8,6 +8,12 @@ const SubscriptionStatus = () => {
     const dispatch = useDispatch()
     const { hasActiveSub, subDetails, isSubLoading } = useSubscription()
 
+    useEffect(()=> {
+        console.log('hasActiveSub: ', hasActiveSub)
+        console.log('subDetails: ', subDetails)
+        console.log('isSubLoading: ', isSubLoading)
+    },[hasActiveSub])
+
     useEffect(() => {
         dispatch(checkSubStatThunk())
     }, [dispatch])
@@ -20,9 +26,11 @@ const SubscriptionStatus = () => {
         )
     }
 
-    if (!hasActiveSub) {
+    if (!hasActiveSub || !subDetails) {
         return (
-            <Link to='/subscription'>구독하기</Link>
+            <Link to='/subscription'>
+                구독하기
+            </Link>
         )
     }
 
@@ -36,6 +44,7 @@ const SubscriptionStatus = () => {
             {subDetails?.plan?.name === 'yearly' && '연간'}
         </Link>
     )
+    
 }
 
 export default SubscriptionStatus

@@ -13,6 +13,9 @@ export const subscriptionApi = {
     // 구독 해지 예약
     cancelSubApi: () => api.patch('/subscription/cancel'),
 
+    //구독 해지 예약 취소
+    revertCancelApi: () => api.patch('/subscription/cancel/revert'),
+
     // 구독 즉시 해지
     unSubNowApi: () => api.delete('/subscription'),
 }
