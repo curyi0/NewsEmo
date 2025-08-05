@@ -1,5 +1,6 @@
 import { createAsyncThunk as thunk} from '@reduxjs/toolkit'
 import { subscriptionService as subService} from '../services/subscriptionService'
+import { paymentService as payService } from '../services/paymentService'
 
 // 구독 생성
 export const createSubThunk = thunk(
@@ -41,7 +42,7 @@ export const fetchSubDetailsThunk = thunk(
             return data
         } catch (err) {
             console.error('🔴 fetchSubDetailsThunk 에러:', err)
-            return rejectWithValue(err.message || '구독 상세 조회 실패')
+            return rejectWithValue(err.message?.data || '구독 상세 조회 실패')
         }
     }
 )
@@ -80,6 +81,25 @@ export const unSubNowThunk = thunk(
             return data
         } catch (err) {
             return rejectWithValue(err.message || '구독 즉시 해지 실패')
+        }
+    }
+)
+
+// 구독 즉시 해지 + 환불
+export const refundThunk = thunk(
+    'subscription/refund',
+    async ({amount}, {dispatch, rejectWithValue}) => {
+        console.log('[refundThunk] start', amount)
+        try {
+            const data = await payService.refundService(amount)
+
+            // 해지 성궁 후 구독 상세 갱신
+            dispatch(fetchSubDetailsThunk())
+            console.log('[refundThunk] success', data)
+            return data
+        } catch (err) {
+            console.error('[refundThunk] error', err)
+            return rejectWithValue(err.message?.data || '환불 실패')
         }
     }
 )

@@ -70,7 +70,7 @@ const SubscriptionPlans = () => {
                     console.log('아임포트 결제 성공: ', rsp)
                     try {
                         // 서버에 결제 완료 알림
-                        const res = await api.post('/payments/complete', {
+                        const res = await api.post('/payment/complete', {
                             impUid: rsp.imp_uid,
                             merchantUid: rsp.merchant_uid,
                             amount: rsp.paid_amount,

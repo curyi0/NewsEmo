@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { cancelSubThunk, fetchSubDetailsThunk, revertCancelThunk, unSubNowThunk } from '../store/subscriptionThunk'
+import { cancelSubThunk, fetchSubDetailsThunk, refundThunk, revertCancelThunk, unSubNowThunk } from '../store/subscriptionThunk'
 import { clearError, clearSuccessMessage } from '../store/subscriptionSlice'
 import { useNavigate } from 'react-router'
 
 const SubscriptionManagement = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [refundAmount, setRefundAmount] = useState()
 
     // redux에서 직접 가져오는 state
     const {
@@ -60,6 +61,12 @@ const SubscriptionManagement = () => {
 
     const handleUnsubscribe = () => {
         dispatch(unSubNowThunk())
+        setShowUnsubConfirm(false)
+    }
+
+    const handleRefund = () => {
+        // dispatch(refundThunk(refundAmount))
+        dispatch(refundThunk({amount: refundAmount || null}))
         setShowUnsubConfirm(false)
     }
 
@@ -238,9 +245,19 @@ const SubscriptionManagement = () => {
             {showUnsubConfirm && (
                 <div>
                     <h3>즉시 해지</h3>
-                    <p>
+                    {/* <p>
                         구독을 즉시 해지하시겠습니까? 이 작업은 되돌릴 수 없으며, 남은 구독 기간에 대한 환불은 불가능합니다.
+                    </p> */}
+                    <p>
+                        구독을 즉시 해지하시겠습니까?
+                        {` 남은 기간에 대한 환불${refundAmount ? ` (${refundAmount}원)` : ''}이 진행됩니다.`}
                     </p>
+                    <input
+                        type='number'
+                        placeholder='부분 환불 금액(선택)'
+                        value={refundAmount || 0}
+                        onChange={(e) => setRefundAmount(e.target.value)}
+                    />
                     <div>
                         <button
                             onClick={() => setShowUnsubConfirm(false)}
@@ -248,7 +265,7 @@ const SubscriptionManagement = () => {
                             취소
                         </button>
                         <button
-                            onClick={handleUnsubscribe}
+                            onClick={handleRefund}
                             disabled={loading}
                         >
                             즉시 해지

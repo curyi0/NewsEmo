@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { cancelSubThunk, checkSubStatThunk, createSubThunk, fetchSubDetailsThunk, unSubNowThunk } from "./subscriptionThunk";
+import { cancelSubThunk, checkSubStatThunk, createSubThunk, fetchSubDetailsThunk, refundThunk, unSubNowThunk } from "./subscriptionThunk";
 
 /**
  * @typedef {import('./subscriptionTypes').subscriptionDetails} SubDetails
@@ -86,15 +86,26 @@ const subscriptionSlice = createSlice({
                 state.detailsLoading = true
                 state.error = null
             })
+            // .addCase(fetchSubDetailsThunk.fulfilled, (state, action) => {
+            //     console.log('🟢 fetchSubDetailsThunk.fulfilled payload:', action.payload)
+            //     state.detailsLoading = false
+            //     state.subscriptionDetails = action.payload
+            //     state.isActive = action.payload?.active || false
+            // })
+            // .addCase(fetchSubDetailsThunk.rejected, (state, action) => {
+            //     state.detailsLoading = false
+            //     state.error = action.payload?.message || '구독 정보 조회에 실패했습니다.'
+            //     state.subscriptionDetails = null
+            // })
             .addCase(fetchSubDetailsThunk.fulfilled, (state, action) => {
-                console.log('🟢 fetchSubDetailsThunk.fulfilled payload:', action.payload)
+                console.log('🟢 fetchSubDetailsThunk.fulfilled payload:', action.payload.data)
                 state.detailsLoading = false
-                state.subscriptionDetails = action.payload
-                state.isActive = action.payload?.active || false
+                state.subscriptionDetails = action.payload.data?.details || null
+                state.isActive = action.payload.data?.status === 'ACTIVE'
             })
             .addCase(fetchSubDetailsThunk.rejected, (state, action) => {
                 state.detailsLoading = false
-                state.error = action.payload?.message || '구독 정보 조회에 실패했습니다.'
+                state.error = action.payload.data?.message || '구독 정보 조회에 실패했습니다.'
                 state.subscriptionDetails = null
             })
 
@@ -128,6 +139,22 @@ const subscriptionSlice = createSlice({
                 state.successMessage = '구독이 즉시 해지되었습니다.'
             })
             .addCase(unSubNowThunk.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload?.message || '구독 해지에 실패했습니다.'
+            })
+
+            //환불
+            .addCase(refundThunk.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(refundThunk.fulfilled, (state, action) => {
+                state.loading = false
+                state.subscriptionDetails = action.payload.data?.details || null
+                state.isActive = action.payload.data?.status === 'ACTIVE'
+                state.successMessage = action.payload?.message || '구독이 해지 및 환불되었습니다.'
+            })
+            .addCase(refundThunk.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload?.message || '구독 해지에 실패했습니다.'
             })

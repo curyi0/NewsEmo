@@ -1,4 +1,4 @@
-import { subscriptionApi as subApi } from "@features/subscription/api/subscriptionApi";
+import { subscriptionApi as subApi } from "@features/subscription/api/subscriptionApi"
 
 export const subscriptionService = {
     createSubService: async (plan) => {
