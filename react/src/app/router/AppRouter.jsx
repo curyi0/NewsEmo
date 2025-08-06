@@ -23,6 +23,7 @@ import Info from "../../Routes/Info";
 import Semi from '../../Routes/Semi';
 import Register from "../../Routes/Register";
 import CompanyInfo from '../../pages/CompanyInfo';
+import CompanyReview from '../../pages/CompanyReview';
 import MentionPage from '../../pages/MentionPage';
 import Reputation from '../../pages/Reputation';
 import AssociationPage from '../../pages/AssociationPage';
@@ -35,6 +36,7 @@ import { fetchCompaniesByName, fetchCompaniesByType, setSearchTerm } from '../..
 import Chatbot from '../../ChatBot'
 import { Radio } from 'antd'
 import SubscriptionManagement from '../../features/subscription/pages/SubscriptionManagement'
+import Subscribe from '../../pages/Subscribe'
 
 // SearchBar 정의 부분
 const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => { // (A) 여기서 받는 props는 onSubmit, loading, navigate 뿐입니다.
@@ -168,6 +170,9 @@ const AppRouter = () => {
                 {/* 마이페이지 - 인증 필요 */}
                 <Route path="/mypage" element={<ProtectedMyPage />} />
                 
+                {/* 구독페이지 */}
+                <Route path="/subscribe" element={<Subscribe />}/>
+                
                 {/* 로그인 - 이미 로그인된 경우 홈으로 리다이렉트 */}
                 <Route path="/login" element={
                     !isAuthenticated 
@@ -204,7 +209,7 @@ const AppRouter = () => {
                 <Route path="/" element={<Main />} />
                 {/* <Route path="/pageA" element={<PageA />} /> */}
                 <Route path="/info" element={<Info />} />
-                <Route path="/mypage" element={<MyPage />} />
+                
                 <Route path="/register" element={<Register />} />
                 {/* 상세페이지 */}
                 <Route path="/semi/*" element={<Semi />}>
@@ -212,6 +217,7 @@ const AppRouter = () => {
                     <Route index element={<Navigate to="mention" replace />} />
                     <Route path="mention" element={<MentionPage />} />
                     <Route path="company" element={<CompanyInfo />} />
+                    <Route path="companyreview" element={<CompanyReview />} />
                     <Route path="reputation" element={<Reputation />} />
                     <Route path="association" element={<AssociationPage />} />
                     <Route path="comparekeyword" element={<CompareKeyword/>}/>

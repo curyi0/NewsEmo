@@ -7,7 +7,7 @@ const Ranking = () => {
   const [loading, setLoading] = useState(false)
   // const [activeSlide,setActiveSlide]=useState(0)
   const API_BASE_URL = 'http://localhost:8000'
-
+      
 
   const slideSubs= ['매출액', '영업이익', "순이익"]
   const [slideIndexes, setSlideIndexes] = useState({

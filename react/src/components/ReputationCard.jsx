@@ -132,23 +132,35 @@ const ReputationCard = ({ onCalculateSummary }) => {
       
       extra={
         <LayoutGroup>
-          <div className="trend-tab-list">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setViewMode(tab.id)}
-                className={`trend-tab-button ${viewMode === tab.id ? "active" : ""}`}
-              >
-                <span className="tab-label">{tab.label}</span>
-                {viewMode === tab.id && (
-                  <motion.span
-                    layoutId="bubble"
-                    className="trend-tab-indicator"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </button>
-            ))}
+          <div className="flex space-x-1 bg-gray-200 p-1 rounded-full">
+            {tabs.map((tab) => {
+              const isActive = viewMode === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setViewMode(tab.id)}
+                  className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition focus-visible:outline-2`}
+                  style={{
+                    color: isActive ? 'white' : 'black', 
+                    WebkitTapHighlightColor: 'transparent',
+                    zIndex: 1,
+                  }}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="bubble"
+                      className="absolute inset-0 z-0 mix-blend-normal"
+                      style={{ 
+                        borderRadius: 9999,
+                        backgroundColor: '#582D1D'
+                      }}
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span style={{ position: 'relative', zIndex: 2 }}>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </LayoutGroup>
       }

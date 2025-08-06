@@ -1,65 +1,141 @@
-import React from 'react';
-import { Card } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import KeywordRankCard from './KeywordRankCard';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
-const cardStyle = {
-  flex: '1 0 430px',          
-  maxWidth: 300,
-  minHeight: 90,
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  textAlign: 'center',
-  borderRadius: '20px',
-};
+const categories = [
+  '정치', '경제', '사회', '문화', '국제', '지역',
+  '스포츠', 'IT_과학', '범죄', '사고', '재해'
+];
 
 const ReputationTopCard = ({ summary }) => {
   const { maxType, maxPercentage } = summary;
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const dropdownRef = useRef(null);
 
-  
+  // ✅ 외부 클릭 시 드롭다운 닫기
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // ✅ 체크박스 상태 토글
+  const handleCheckboxChange = (category) => {
+    setSelected((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  // ✅ 적용 버튼 클릭 핸들러
+  const handleApply = () => {
+    console.log('선택된 카테고리:', selected);
+    setDropdownOpen(false);
+    // 여기에 선택된 카테고리를 적용하는 로직을 추가할 수 있습니다
+  };
+
+  const cardItems = [
+    {
+      icon: null,
+      title: '',
+      subtitle: '',
+      color: ''
+    },
+    {
+      icon: maxType === '긍정' ? <ThumbsUp size={28} color="#5845ea" /> : <ThumbsDown size={28} color="#ea4545" />,
+      title: `${maxType} ${maxPercentage}%`,
+      subtitle: '가장 높은 비율',
+      color: maxType === '긍정' ? '#5845ea' : '#ea4545'
+    }
+  ];
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '20px',  
-        justifyContent: 'center',
-      }}
-    >
-      <Card style={cardStyle}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" style={{ gridTemplateColumns: '1fr 2fr 2fr' }}>
+      {cardItems.map((item, idx) => (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            height: '100%',
-          }}
+          key={idx}
+          className={idx === 0 ? "flex items-center justify-center" : "relative flex items-center justify-center rounded-2xl border border-gray-100 bg-white py-2 pl-3 pr-3 dark:border-gray-800 dark:bg-white/[0.03] xl:pr-4"}
         >
-          {maxType === '긍정' ? (
-            <ThumbsUp size={28} color="#5845ea" />
+          {idx === 0 ? (
+            <div className="relative flex flex-col items-center w-full" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className="
+                  bg-[#fbeee0]
+                  border-2 border-[#422800]
+                  rounded-full
+                  shadow-[4px_4px_0_0_#422800]
+                  text-[#422800]
+                  font-semibold
+                  text-sm
+                  px-4 py-2
+                  hover:bg-white
+                  active:shadow-[2px_2px_0_0_#422800]
+                  active:translate-x-[2px]
+                  active:translate-y-[2px]
+                  transition
+                  select-none
+                "
+              >
+                카테고리 선택
+              </button>
+              
+              {dropdownOpen && (
+                <div className="absolute top-12 z-20 w-max bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg pt-4 px-4 pb-1.5">
+                  <div className="grid grid-cols-3 gap-3 mb-3">
+                    {categories.map((category, i) => (
+                      <label
+                        key={i}
+                        className="flex items-center gap-1 text-xs text-gray-800 dark:text-white cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selected.includes(category)}
+                          onChange={() => handleCheckboxChange(category)}
+                          className="w-4 h-4 dark:border-white/20 transition-all duration-300 ease-in-out"
+                        />
+                        {category}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="flex justify-center pt-1 border-t border-gray-200 dark:border-gray-600">
+                    <button
+                      onClick={handleApply}
+                      className="w-24 h-8 bg-white cursor-pointer rounded-3xl border-2 border-[#9748FF] shadow-[inset_0px_-2px_0px_1px_#9748FF] group hover:bg-[#9748FF] transition duration-300 ease-in-out flex items-center justify-center"
+                    >
+                      <span className="font-medium text-[#333] group-hover:text-white text-xs">적용</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
-            <ThumbsDown size={28} color="#ea4545" />
+            <>
+              <div className="text-center">
+                <h4 className="mb-1 text-xl font-medium text-gray-800 dark:text-white/90" style={{ color: item.color }}>
+                  {item.title}
+                </h4>
+                <p className="text-base text-gray-500 dark:text-gray-400">
+                  {item.subtitle}
+                </p>
+              </div>
+              <div className="absolute left-3">{item.icon}</div>
+            </>
           )}
-          <div style={{ fontSize: '20px', color: '#5845ea', fontWeight: 'bold' }}>
-            {maxType} {maxPercentage}%
-          </div>
         </div>
-      </Card>
-      <Card style={cardStyle}>
-        카드2
-      </Card>
-      <div style={cardStyle} className="flip-card">
-        <div className="flip-card-inner">
-          <div className="flip-card-front">
-            <p className="ranktitle">랭킹보기</p>
-          </div>
-          <div className="flip-card-back">
-            <KeywordRankCard />
-          </div>
+      ))}
+      <div className="relative rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-white/[0.03] cursor-pointer">
+        <div className="flex items-center justify-center h-full py-4">
+          <p className="ranktitle">랭킹보기</p>
+        </div>
+        <div className="absolute inset-0 bg-white rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 z-10">
+          <KeywordRankCard />
         </div>
       </div>
     </div>
