@@ -14,7 +14,7 @@ import SignupPage from '../../features/auth/pages/SignupPage'
 import OAuth2LinkComplete from '../../features/auth/components/OAuth2LinkComplete'
 import PasswordResetRequestPage from '../../features/auth/pages/PasswordResetRequestPage'
 import PasswordResetPage from '../../features/auth/pages/PasswordResetPage'
-import { withAuthGuard } from '../../features/auth/components/withAuthGuard'
+import { withAdminGuard, withAuthGuard } from '../../features/auth/components/withAuthGuard'
 import AuthRedirectHandler from '../../shared/utils/api/AuthRedirectHandler'
 // -------------------------------------------------------------------------
 import Admin from "../../Admin";
@@ -39,6 +39,7 @@ import SubscriptionManagement from '../../features/subscription/pages/Subscripti
 import SubscriptionPlans from '../../features/subscription/pages/SubscriptionPlans'
 
 import '../../App.css'
+import AdminUserPage from '../../features/admin/pages/AdminUserPage'
 // SearchBar 정의 부분
 // const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => { // (A) 여기서 받는 props는 onSubmit, loading, navigate 뿐입니다.
 //   // console.log("임포트확인:" ,setSearchTerm)
@@ -81,6 +82,7 @@ const AppRouter = () => {
     // 페이지에 인증요구하도록
     const ProtectedMyPage = withAuthGuard(MyPage)
     const ProtectedSubscriptionManagement = withAuthGuard(SubscriptionManagement)
+    const ProtectedAdminUserPage = withAdminGuard(AdminUserPage)
 
     const [currentPage, setCurrentPage] = useState("");
 
@@ -209,6 +211,8 @@ const AppRouter = () => {
                 {/* 구독관련 */}
                 <Route path="/subscription" element={<SubscriptionPlans />} />
                 <Route path="/subscription/manage" element={<ProtectedSubscriptionManagement />} />
+                {/*관리자페이지*/}
+                <Route path='/admin/users' element={<ProtectedAdminUserPage />} />
             </Routes>
             <Footer />
         </>
