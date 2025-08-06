@@ -103,3 +103,15 @@ export const refundThunk = thunk(
         }
     }
 )
+
+export const createRefundRequestThunk = thunk(
+    'subscription/requestRefund',
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await subService.reqRefundService()
+            return res
+        } catch (err) {
+            return rejectWithValue(err.message || '환불 요청 실패')
+        }
+    }
+)

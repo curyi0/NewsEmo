@@ -11,6 +11,39 @@ import {
 } from '../utils'
 
 export const authService = {
+  loginService: async (credentials) => {
+    console.log('authService 로그인 시작')
+    // 로그인 api 호출
+    const res = await authApi.login(credentials)
+    const { success, message, data} = res.data
+    if(!success) throw new Error(message || '로그인 실패')
+    console.log('authService 로그인 api 완료')
+    // 토큰 헤더 수동 추출 및 저장 (백업용)
+    if (res.headers) {
+      const tokenHeaders = ['access-token', 'Access-Token', 'authorization', 'Authorization']
+      let token = null
+      let foundHeader = null
+      for (const headerName of tokenHeaders) {
+        const value = res.headers[headerName]
+        if (value) {
+          token = value
+          foundHeader = headerName
+          break
+        }
+      }
+      if (token) {
+        console.log (`authService ${foundHeader}에서 토큰 발견:`, token)
+        const cleanToken = token.startsWith('Bearer ') ? token.slice(7) : token
+        setAccessToken(cleanToken)
+        console.log('authService 토큰 수동 저장 완료')
+      } else {
+        console.warn('authService 응답 헤더에서 토큰을 찾을 수 없음')
+      }
+    }
+    console.log('authService 로그인 응답처리 완료')
+
+    return { user: data, message}
+  },
   // loginAndFetchUser: async (credentials) => {
   //   await authApi.login(credentials)  
   //   const user = await userApi.getProfile() // 실제 사용자 정보 조회

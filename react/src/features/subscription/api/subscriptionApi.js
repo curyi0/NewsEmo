@@ -18,4 +18,6 @@ export const subscriptionApi = {
 
     // 구독 즉시 해지
     unSubNowApi: () => api.delete('/subscription'),
+
+    reqRefundApi: () => api.post('/subscription/refund-request')
 }

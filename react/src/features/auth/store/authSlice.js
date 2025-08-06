@@ -26,6 +26,9 @@ const authSlice = createSlice({
         setWarning(state, action) {
             state.warning = action.payload
         },
+        clearError(state) {
+            state.error = null
+        },
         clearWarning(state) {
             state.warning = null
         },
@@ -38,5 +41,5 @@ const authSlice = createSlice({
     },
 }) 
 
-export const { setUser, setLoading, setError, setWarning, clearWarning, clearAuth } = authSlice.actions
+export const { setUser, setLoading, setError, setWarning, clearError, clearWarning, clearAuth } = authSlice.actions
 export default authSlice.reducer

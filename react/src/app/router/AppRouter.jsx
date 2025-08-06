@@ -40,6 +40,8 @@ import SubscriptionPlans from '../../features/subscription/pages/SubscriptionPla
 
 import '../../App.css'
 import AdminUserPage from '../../features/admin/pages/AdminUserPage'
+import AdminDashboard from '../../features/admin/pages/AdminDashboard'
+import ProtectedAdminRoute from './ProtectedAdminRoute'
 // SearchBar 정의 부분
 // const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => { // (A) 여기서 받는 props는 onSubmit, loading, navigate 뿐입니다.
 //   // console.log("임포트확인:" ,setSearchTerm)
@@ -82,7 +84,7 @@ const AppRouter = () => {
     // 페이지에 인증요구하도록
     const ProtectedMyPage = withAuthGuard(MyPage)
     const ProtectedSubscriptionManagement = withAuthGuard(SubscriptionManagement)
-    const ProtectedAdminUserPage = withAdminGuard(AdminUserPage)
+    // const ProtectedAdminUserPage = withAdminGuard(AdminUserPage)
 
     const [currentPage, setCurrentPage] = useState("");
 
@@ -212,7 +214,11 @@ const AppRouter = () => {
                 <Route path="/subscription" element={<SubscriptionPlans />} />
                 <Route path="/subscription/manage" element={<ProtectedSubscriptionManagement />} />
                 {/*관리자페이지*/}
-                <Route path='/admin/users' element={<ProtectedAdminUserPage />} />
+                {/* <Route path='/admin/users' element={<ProtectedAdminUserPage />} /> */}
+                <Route element ={<ProtectedAdminRoute />}>
+                    <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                    <Route path='/admin/users' element={<AdminUserPage />} />
+                </Route>
             </Routes>
             <Footer />
         </>

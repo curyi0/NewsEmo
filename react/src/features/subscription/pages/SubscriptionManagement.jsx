@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { cancelSubThunk, fetchSubDetailsThunk, refundThunk, revertCancelThunk, unSubNowThunk } from '../store/subscriptionThunk'
+import { cancelSubThunk, createRefundRequestThunk, fetchSubDetailsThunk, refundThunk, revertCancelThunk, unSubNowThunk } from '../store/subscriptionThunk'
 import { clearError, clearSuccessMessage } from '../store/subscriptionSlice'
 import { useNavigate } from 'react-router'
 
@@ -66,7 +66,8 @@ const SubscriptionManagement = () => {
 
     const handleRefund = () => {
         // dispatch(refundThunk(refundAmount))
-        dispatch(refundThunk({amount: refundAmount || null}))
+        // dispatch(refundThunk({amount: refundAmount || null}))
+        dispatch(createRefundRequestThunk())
         setShowUnsubConfirm(false)
     }
 
@@ -248,7 +249,7 @@ const SubscriptionManagement = () => {
                     {/* <p>
                         구독을 즉시 해지하시겠습니까? 이 작업은 되돌릴 수 없으며, 남은 구독 기간에 대한 환불은 불가능합니다.
                     </p> */}
-                    <p>
+                    {/* <p>
                         구독을 즉시 해지하시겠습니까?
                         {` 남은 기간에 대한 환불${refundAmount ? ` (${refundAmount}원)` : ''}이 진행됩니다.`}
                     </p>
@@ -257,7 +258,11 @@ const SubscriptionManagement = () => {
                         placeholder='부분 환불 금액(선택)'
                         value={refundAmount || 0}
                         onChange={(e) => setRefundAmount(e.target.value)}
-                    />
+                    /> */}
+                    <p>
+                        구독을 즉시 해지하시겠습니까?
+                        환불은 관리자가 확인 후 처리됩니다.
+                    </p>
                     <div>
                         <button
                             onClick={() => setShowUnsubConfirm(false)}

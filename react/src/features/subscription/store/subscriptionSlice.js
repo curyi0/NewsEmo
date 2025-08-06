@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { cancelSubThunk, checkSubStatThunk, createSubThunk, fetchSubDetailsThunk, refundThunk, unSubNowThunk } from "./subscriptionThunk";
+import { createSlice, TaskAbortError } from "@reduxjs/toolkit";
+import { cancelSubThunk, checkSubStatThunk, createRefundRequestThunk, createSubThunk, fetchSubDetailsThunk, refundThunk, unSubNowThunk } from "./subscriptionThunk";
 
 /**
  * @typedef {import('./subscriptionTypes').subscriptionDetails} SubDetails
@@ -157,6 +157,23 @@ const subscriptionSlice = createSlice({
             .addCase(refundThunk.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload?.message || '구독 해지에 실패했습니다.'
+            })
+
+            .addCase(createRefundRequestThunk.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(createRefundRequestThunk.fulfilled, (state, action) => {
+                state.loading = false
+                state.successMessage = '환불 요청이 접수되었습니다. 관리자가 승인 후 처리됩니다.'
+                if (state.subscriptionDetails) {
+                    state.subscriptionDetails.status = 'CANCELLED'
+                }
+                state.isActive = false
+            })
+            .addCase(createRefundRequestThunk.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload?.message || '환불 요청에 실패했습니다.'
             })
     }
 })

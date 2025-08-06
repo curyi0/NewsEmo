@@ -11,7 +11,8 @@ import { logoutThunk } from "../features/auth/store/authThunk";
 import SubscriptionStatus from '@features/subscription/components/SubscriptionStatus'
 
 const Header = ({  toRegister, handleNavigation, SearchBar }) => {
-  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+  // const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+  const {isAuthenticated, user} = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   //   const CompanyRanking = () => (
   //   <section className="ranks">
@@ -44,6 +45,8 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
           }
       }
 
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN')
+
   // const toLogin= {()=> setLoginModal(true)}
   return (
     // <header className="w-full border-b shadow-sm">
@@ -71,7 +74,13 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
               {/* <li><Link to="/subscription">구독하기</Link></li> */}
               {isAuthenticated && (
+                <>
+                {isAdmin && (
+                  <li><Link to='/admin/dashboard'>관리자 대시보드</Link></li>
+                )}
                 <li><Link to="/mypage">마이페이지</Link></li>
+                </>
+                
               )}
             </ul>
 

@@ -26,8 +26,8 @@ export const authApi = {
   login: async (credentials) => {
     try {
       // headers, data, status 등 모든 정보 포함
-      const response = await api.post('/auth/login', credentials)
-      return response
+      const res = await api.post('/auth/login', credentials)
+      return res
     } catch (err) {
       const res = err.response
       if (res?.data?.code) {
