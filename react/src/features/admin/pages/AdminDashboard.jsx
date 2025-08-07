@@ -7,6 +7,7 @@ const AdminDashboard = () => {
             <h2>관리자 대시보드</h2>
             <ul>
                 <li><Link to="/admin/users">회원 관리</Link></li>
+                <li><Link to="/admin/refunds">환불 관리</Link></li>
             </ul>
         </div>
     )
