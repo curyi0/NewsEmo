@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card } from 'antd';
 import { Line } from '@ant-design/plots';
-import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { motion, LayoutGroup } from 'framer-motion';
+import { LayoutGroup } from 'framer-motion';
 //import '../CSS/tabButton.css';
 
 dayjs.extend(isoWeek);
@@ -36,7 +35,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
     { id: 'month', label: '월별' },
   ];
 
-  const groupBy = (unit) => {
+  const groupBy = useCallback((unit) => {
     const grouped = {};
     rawData.forEach(({ date, value }) => {
       const key =
@@ -49,7 +48,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
     return Object.entries(grouped)
       .map(([date, value]) => ({ date, value }))
       .sort((a, b) => (a.date > b.date ? 1 : -1));
-  };
+  }, [rawData]);
 
   const chartData = useMemo(() => {
     if (viewMode === 'week') return groupBy('week');
@@ -64,7 +63,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
     onMaxDateChange(maxValueDate.date);
   }, [rawData, onMaxDateChange]);
 
-    const config = {
+  const config = useMemo(() => ({
       data: chartData,
       xField: 'date',
       yField: 'value',
@@ -84,6 +83,29 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
         stroke: '#4A90E2',
         lineWidth: 2,
       },
+      xAxis: viewMode === 'day' ? {
+        tickCount: 7,
+        label: {
+          formatter: (value) => {
+            return dayjs(value).format('MM/DD');
+          },
+          style: {
+            fontSize: 12,
+          },
+        },
+        tickLine: {
+          style: {
+            stroke: '#ddd',
+          },
+        },
+        grid: {
+          line: {
+            style: {
+              stroke: '#f0f0f0',
+            },
+          },
+        },
+      } : undefined,
       interaction: {
         tooltip: { marker: false },
       },
@@ -91,7 +113,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
         start: 0,
         end: 1,
       },
-    };
+    }), [chartData, height, viewMode]);
 
 
   return (
@@ -116,14 +138,12 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
             }}
           >
                               {isActive && (
-                    <motion.span
-                      layoutId="bubble"
+                    <span
                       className="absolute inset-0 z-0 mix-blend-normal"
                       style={{ 
                         borderRadius: 9999,
                         backgroundColor: '#582D1D'
                       }}
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
                   )}
             <span style={{ position: 'relative', zIndex: 2 }}>{tab.label}</span>

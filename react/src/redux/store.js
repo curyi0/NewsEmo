@@ -7,6 +7,8 @@ import auth from '@features/auth/store/authSlice'
 import user from '@features/user/store/userSlice'
 import subscription from '@features/subscription/store/subscriptionSlice'
 import reviewAnalysis from './reducerSlices/reviewAnalysisSlice'
+import adminUsers from '@features/admin/store/adminUserSlice'
+import adminRefunds from '@features/admin/store/adminRefundSlice'
 
 const store = configureStore({
     reducer: {
@@ -18,8 +20,11 @@ const store = configureStore({
         user,
         subscription,
         reviewAnalysis,
+        adminUsers,
+        adminRefunds,
         // info
     }
+    //devTools: true,
 });
 
 export default store

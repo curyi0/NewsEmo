@@ -93,7 +93,7 @@ const AssociationTopCard = () => {
               <button
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="
-                  w-[110px]
+                  w-[140px]
                   bg-[#fbeee0]
                   border-2 border-[#422800]
                   rounded-full
@@ -110,7 +110,7 @@ const AssociationTopCard = () => {
                   select-none
                 "
               >
-                카테고리
+                카테고리 선택
               </button>
               
               {/* 날짜 선택 버튼 추가 */}
@@ -121,7 +121,7 @@ const AssociationTopCard = () => {
                     setCustomDateDropdownOpen((prev) => !prev);
                   }}
                   className="
-                    w-[110px]
+                    w-[140px]
                     bg-[#e0f2fb]
                     border-2 border-[#004280]
                     rounded-full
@@ -138,7 +138,7 @@ const AssociationTopCard = () => {
                     select-none
                   "
                 >
-                  날짜
+                  날짜 선택
                 </button>
                 
                 {customDateDropdownOpen && (
