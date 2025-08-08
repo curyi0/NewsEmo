@@ -160,15 +160,17 @@ const CompareKeyword = ({ height = 600 }) => {
   };
 
   return (
-    <Card
-      title={`공통 연관어 그래프`}
-      style={{ borderRadius: 20 }}
-      bodyStyle={{ padding: 0 }}
-    >
-      <div style={{ height }}>
-        <ReactECharts option={option} style={{ height: "100%", width: "100%" }} />
-      </div>
-    </Card>
+    <div className="min-h-screen bg-[#FBF7F4] p-1">
+      <Card
+        title={`공통 연관어 그래프`}
+        style={{ borderRadius: 20 }}
+        bodyStyle={{ padding: 0 }}
+      >
+        <div style={{ height }}>
+          <ReactECharts option={option} style={{ height: "100%", width: "100%" }} />
+        </div>
+      </Card>
+    </div>
   );
 };
 

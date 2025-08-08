@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card } from 'antd';
 import { Line } from '@ant-design/plots';
-import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
-import { motion, LayoutGroup } from 'framer-motion';
-import '../CSS/tabButton.css';
+import { LayoutGroup } from 'framer-motion';
+//import '../CSS/tabButton.css';
 
 dayjs.extend(isoWeek);
 
@@ -36,7 +35,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
     { id: 'month', label: '월별' },
   ];
 
-  const groupBy = (unit) => {
+  const groupBy = useCallback((unit) => {
     const grouped = {};
     rawData.forEach(({ date, value }) => {
       const key =
@@ -49,7 +48,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
     return Object.entries(grouped)
       .map(([date, value]) => ({ date, value }))
       .sort((a, b) => (a.date > b.date ? 1 : -1));
-  };
+  }, [rawData]);
 
   const chartData = useMemo(() => {
     if (viewMode === 'week') return groupBy('week');
@@ -64,7 +63,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
     onMaxDateChange(maxValueDate.date);
   }, [rawData, onMaxDateChange]);
 
-    const config = {
+  const config = useMemo(() => ({
       data: chartData,
       xField: 'date',
       yField: 'value',
@@ -84,6 +83,29 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
         stroke: '#4A90E2',
         lineWidth: 2,
       },
+      xAxis: viewMode === 'day' ? {
+        tickCount: 7,
+        label: {
+          formatter: (value) => {
+            return dayjs(value).format('MM/DD');
+          },
+          style: {
+            fontSize: 12,
+          },
+        },
+        tickLine: {
+          style: {
+            stroke: '#ddd',
+          },
+        },
+        grid: {
+          line: {
+            style: {
+              stroke: '#f0f0f0',
+            },
+          },
+        },
+      } : undefined,
       interaction: {
         tooltip: { marker: false },
       },
@@ -91,7 +113,7 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
         start: 0,
         end: 1,
       },
-    };
+    }), [chartData, height, viewMode]);
 
 
   return (
@@ -100,28 +122,39 @@ const MentionTrendCard = ({ onMaxDateChange, height }) => {
       style={{ width: '100%', borderRadius: '20px' }}
       bodyStyle={{ paddingBottom: 0 }}
       extra={
-        <LayoutGroup>
-          <div className="trend-tab-list">
-  {tabs.map((tab) => (
-    <button
-  key={tab.id}
-  onClick={() => setViewMode(tab.id)}
-  className={`trend-tab-button ${viewMode === tab.id ? 'active' : ''}`}
->
-  <span className="tab-label">{tab.label}</span>
-  {viewMode === tab.id && (
-    <motion.span
-      layoutId="bubble"
-      className="trend-tab-indicator"
-      transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-    />
-  )}
-</button>
-  ))}
-</div>
+  <LayoutGroup>
+    <div className="flex space-x-1 bg-gray-200 p-1 rounded-full">
+      {tabs.map((tab) => {
+        const isActive = viewMode === tab.id;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setViewMode(tab.id)}
+            className={`relative rounded-full px-3 py-1.5 text-sm font-medium transition focus-visible:outline-2`}
+            style={{
+              color: isActive ? 'white' : 'black', 
+              WebkitTapHighlightColor: 'transparent',
+              zIndex: 1,
+            }}
+          >
+                              {isActive && (
+                    <span
+                      className="absolute inset-0 z-0 mix-blend-normal"
+                      style={{ 
+                        borderRadius: 9999,
+                        backgroundColor: '#582D1D'
+                      }}
+                    />
+                  )}
+            <span style={{ position: 'relative', zIndex: 2 }}>{tab.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  </LayoutGroup>
+}
 
-        </LayoutGroup>
-      }
+
     >
       <Line {...config} />
     </Card>
