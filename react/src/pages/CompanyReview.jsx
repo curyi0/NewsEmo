@@ -118,117 +118,99 @@ const CompanyReview = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FBF7F4] p-1">
-      <Title level={2} className="text-center mb-6">
-        {companyName} 리뷰 분석 결과
-      </Title>
-      
-      {/* 전체 통계 */}
-      <Card className="mb-6">
-        <Row gutter={16}>
-          <Col span={8}>
-            <div className="text-center">
-              <Title level={4}>총 리뷰 수</Title>
-              <Text className="text-2xl font-bold">{total_count}개</Text>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div className="text-center">
-              <Title level={4}>평균 만족도</Title>
-              <Text className="text-2xl font-bold">{avg_score.toFixed(1)}점</Text>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div className="text-center">
-              <Title level={4}>분석 완료</Title>
-              <Text className="text-2xl font-bold text-green-500">✓</Text>
-            </div>
-          </Col>
-        </Row>
-      </Card>
+    <div className="min-h-screen bg-[#FDF8F4] py-10 px-4">
+  <div className="max-w-6xl mx-auto">
+    {/* 제목 */}
+    <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">
+      {companyName} 리뷰 분석 결과
+    </h2>
 
-      {/* 감정 분석 차트 */}
-      <div className="flex justify-center gap-12 mb-8">
-        {sentiments.map(({ label, percent, color, keywords, sampleReviews }, index) => (
-          <Card key={index} className="w-80 text-center">
-            <Title level={4} style={{ color }}>{label}</Title>
-            <div className="flex justify-center">
-              <Liquid {...{ ...config, percent }} />
-            </div>
-            
-            {/* 키워드 */}
-            {keywords.length > 0 && (
-              <div className="mt-4 text-center">
-                <Text strong>주요 키워드:</Text>
-                <div className="flex flex-wrap gap-1 mt-1 justify-center">
-                  {keywords.map((kw, i) => (
-                    <span key={i} className="px-2 py-1 bg-gray-100 rounded text-xs">
-                      {kw.keyword} ({kw.frequency})
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* 샘플 리뷰 */}
-            {sampleReviews.length > 0 && (
-              <div className="mt-4 text-center">
-                <Text strong>대표 리뷰:</Text>
-                {sampleReviews.map((review, i) => (
-                  <div key={i} className="mt-2 p-2 bg-gray-50 rounded text-xs">
-                    "{review.review}"
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-        ))}
+    {/* 통계 카드 */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div className="bg-white shadow-md rounded-2xl p-6 text-center">
+        <h4 className="text-gray-600 mb-2 font-semibold">총 리뷰 수</h4>
+        <p className="text-2xl font-bold text-gray-900">{total_count}개</p>
+      </div>
+      <div className="bg-white shadow-md rounded-2xl p-6 text-center">
+        <h4 className="text-gray-600 mb-2 font-semibold">평균 만족도</h4>
+        <p className="text-2xl font-bold text-gray-900">{avg_score.toFixed(1)}점</p>
+      </div>
+      <div className="bg-white shadow-md rounded-2xl p-6 text-center">
+        <h4 className="text-gray-600 mb-2 font-semibold">분석 완료</h4>
+        <p className="text-2xl font-bold text-green-500">✓</p>
+      </div>
+    </div>
+
+    {/* 감정 분석 카드 */}
+    <div className="flex flex-col md:flex-row justify-center gap-6 mb-10 px-4 md:px-0">
+  {sentiments.map(({ label, percent, color, keywords, sampleReviews }, index) => (
+    <div key={index} className="bg-white shadow-md rounded-2xl p-6 w-full md:w-[440px]">
+      <h4 className="text-lg font-semibold mb-4" style={{ color }}>{label}</h4>
+      <div className="flex justify-center mb-4">
+        <div className="w-36 h-36 flex justify-center items-center">
+          <Liquid {...{ ...config, percent }} />
+        </div>
       </div>
 
-      {/* 상세 분석 */}
-      <Row gutter={16}>
-        <Col span={12}>
-          <Card title="긍정적 리뷰 분석">
-            <div className="space-y-4">
-              <div>
-                <Text strong>평균 점수: </Text>
-                <Text>{pros.avg_score?.toFixed(1) || 0}점</Text>
-              </div>
-              <div>
-                <Text strong>주요 키워드:</Text>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {pros.keywords?.map((kw, i) => (
-                    <span key={i} className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                      {kw.keyword} ({kw.frequency})
-                    </span>
-                  )) || <Text className="text-black">데이터 없음</Text>}
-                </div>
+          {/* 키워드 */}
+          {keywords.length > 0 && (
+            <div className="mt-4 text-sm">
+              <p className="font-medium text-gray-700">주요 키워드:</p>
+              <div className="flex flex-wrap justify-center gap-2 mt-2">
+                {keywords.map((kw, i) => (
+                  <span key={i} className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+                    {kw.keyword} ({kw.frequency})
+                  </span>
+                ))}
               </div>
             </div>
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="부정적 리뷰 분석">
-            <div className="space-y-4">
-              <div>
-                <Text strong>평균 점수: </Text>
-                <Text>{cons.avg_score?.toFixed(1) || 0}점</Text>
-              </div>
-              <div>
-                <Text strong>주요 키워드:</Text>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {cons.keywords?.map((kw, i) => (
-                    <span key={i} className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">
-                      {kw.keyword} ({kw.frequency})
-                    </span>
-                  )) || <Text className="text-gray-500">데이터 없음</Text>}
-                </div>
+          )}
+
+          {/* 샘플 리뷰 */}
+          {sampleReviews.length > 0 && (
+            <div className="mt-4 text-sm">
+              <p className="font-medium text-gray-700">대표 리뷰:</p>
+              <div className="mt-2 space-y-2">
+                {sampleReviews.map((review, i) => (
+                  <p key={i} className="bg-gray-50 rounded p-2 text-gray-600 text-xs">"{review.review}"</p>
+                ))}
               </div>
             </div>
-          </Card>
-        </Col>
-      </Row>
+          )}
+        </div>
+      ))}
     </div>
+
+    {/* 상세 분석 */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="bg-white shadow-md rounded-2xl p-6">
+        <h3 className="text-lg font-bold text-green-700 mb-4">긍정적 리뷰 분석</h3>
+        <p className="mb-2"><span className="font-semibold">평균 점수:</span> {pros.avg_score?.toFixed(1) || 0}점</p>
+        <p className="font-semibold mb-1">주요 키워드:</p>
+        <div className="flex flex-wrap gap-2">
+          {pros.keywords?.map((kw, i) => (
+            <span key={i} className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+              {kw.keyword} ({kw.frequency})
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="bg-white shadow-md rounded-2xl p-6">
+        <h3 className="text-lg font-bold text-red-700 mb-4">부정적 리뷰 분석</h3>
+        <p className="mb-2"><span className="font-semibold">평균 점수:</span> {cons.avg_score?.toFixed(1) || 0}점</p>
+        <p className="font-semibold mb-1">주요 키워드:</p>
+        <div className="flex flex-wrap gap-2">
+          {cons.keywords?.map((kw, i) => (
+            <span key={i} className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
+              {kw.keyword} ({kw.frequency})
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   );
 };
 

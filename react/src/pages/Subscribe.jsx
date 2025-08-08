@@ -11,28 +11,80 @@ const features = [
 
 const Subscribe = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [plan, setPlan] = useState('yearly'); // 추가: 요금제 상태
+  const [plan, setPlan] = useState('monthly'); // 추가: 요금제 상태
+  const [selectedTab, setSelectedTab] = useState('monthly'); // 추가: 탭 상태
+
+  // 오늘 날짜로부터 30일 후 계산
+  const getPaymentDate = () => {
+    const today = new Date();
+    const paymentDate = new Date(today);
+    paymentDate.setDate(today.getDate() + 30);
+    return paymentDate.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <>
-      <div className="max-w-lg mx-auto bg-white shadow-xl rounded-xl p-8 space-y-5 border border-gray-200">
-        {/* 타이틀 */}
-        <h2 className="text-2xl font-semibold text-gray-800">
-          <span className="animate-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 bg-clip-text text-transparent">
-            NEW
-          </span>{" "}
-          Pro
-        </h2>
+      <div className="max-w-lg mx-auto bg-white shadow-xl rounded-xl p-8 border border-gray-200">
+        {/* 상단 영역: 타이틀과 탭 */}
+        <div className="flex justify-between items-start mb-5">
+          {/* 타이틀 */}
+          <h2 className="text-2xl font-semibold text-gray-800">
+            <span className="animate-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 bg-clip-text text-transparent">
+              NEW
+            </span>{" "}
+            Pro
+          </h2>
+
+          {/* 요금제 탭 */}
+          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setSelectedTab('monthly')}
+              className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                selectedTab === 'monthly'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              월간
+            </button>
+            <button
+              onClick={() => setSelectedTab('yearly')}
+              className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+                selectedTab === 'yearly'
+                  ? 'bg-white text-gray-800 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              연간
+            </button>
+          </div>
+        </div>
 
         {/* 설명 */}
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-gray-600 leading-relaxed mb-5">
           소비자 경험 분석, 경쟁사/시장 동향 모니터링, 브랜드/서비스 전략 등
           빅데이터 분석이 필요한 팀
         </p>
 
         {/* 가격 */}
         <div className="text-xl font-bold text-gray-800">
-          ₩99,000 <span className="text-sm text-gray-500">/월 (1인 기준)</span>
+          {selectedTab === 'monthly' ? (
+            <>₩119,000 <span className="text-sm text-gray-500">/월 (1인 기준)</span></>
+          ) : (
+            <div className="flex items-center">
+              ₩1,190,000 <span className="text-sm text-gray-500">/년 (1인 기준)</span>
+              <div className="flex items-center ml-4 text-green-600">
+                <span className="text-sm font-medium">16%</span>
+                <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 기능 목록 */}
@@ -69,9 +121,17 @@ const Subscribe = () => {
     onClick={() => setIsModalOpen(false)}
   >
     <div
-      className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+      className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-3xl w-full relative"
       onClick={(e) => e.stopPropagation()}
     >
+      {/* 진짜 닫기 버튼 - 모달 바깥 오른쪽 위에 위치 */}
+      <button
+        onClick={() => setIsModalOpen(false)}
+        className="absolute -top-0 -right-9 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-0.5 px-2 rounded-full transition shadow-lg z-10"
+      >
+        ✕
+      </button>
+
       {/* 상단 타이틀 */}
       <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
         Pro 무료 체험 시작
@@ -102,18 +162,6 @@ const Subscribe = () => {
 
         {/* 요금제 선택 */}
         <div className="grid sm:grid-cols-2 gap-4">
-          <label className={`border ${plan === 'yearly' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}>
-            <input
-              type="radio"
-              name="plan"
-              checked={plan === 'yearly'}
-              onChange={() => setPlan('yearly')}
-              className="hidden"
-            />
-            <p className="text-sm font-semibold">연간 요금제</p>
-            <p className="text-gray-500 text-sm">₩99,000 (₩8,250/월)</p>
-            <p className="text-green-600 text-xs mt-1">최적가 - ₩19,800 절약</p>
-          </label>
           <label className={`border ${plan === 'monthly' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}>
             <input
               type="radio"
@@ -123,7 +171,19 @@ const Subscribe = () => {
               className="hidden"
             />
             <p className="text-sm font-semibold">월간 요금제</p>
-            <p className="text-gray-500 text-sm">₩9,900</p>
+            <p className="text-gray-500 text-sm">₩119,000</p>
+          </label>
+          <label className={`border ${plan === 'yearly' ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}>
+            <input
+              type="radio"
+              name="plan"
+              checked={plan === 'yearly'}
+              onChange={() => setPlan('yearly')}
+              className="hidden"
+            />
+            <p className="text-sm font-semibold">연간 요금제</p>
+            <p className="text-gray-500 text-sm">₩1,199,000 (₩99,900/월)</p>
+            <p className="text-green-600 text-xs mt-1">16% 할인</p>
           </label>
         </div>
 
@@ -131,7 +191,7 @@ const Subscribe = () => {
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm space-y-2">
           <div className="flex justify-between">
             <span>결제 기한</span>
-            <span className="font-medium">2025년 9월 4일</span>
+            <span className="font-medium">{getPaymentDate()}</span>
           </div>
           <div className="flex justify-between">
             <span>오늘 결제 금액</span>
@@ -141,26 +201,18 @@ const Subscribe = () => {
 
         {/* 후기 */}
         <div className="flex gap-4 pt-6 border-t border-gray-100 mt-6">
-          <img
-            src="https://static.canva.com/web/images/c5440104e677b0e79538a07da6b89a90.png"
-            alt="사용자 아바타"
-            className="w-16 h-16 rounded-full object-cover"
-          />
-          <div>
-            <p className="font-semibold">이원주</p>
-            <p className="text-sm text-gray-600">애피켓마케팅연구소 대표</p>
-            <p className="text-sm mt-2 text-gray-700">
-              “Canva Pro의 이미지 편집 기능 중 배경제거기능은 디자인을 하는 사람들에게 아주 유용한 기능이라고 생각합니다...”
-            </p>
-          </div>
+          
+          
         </div>
 
-        {/* 닫기 버튼 */}
+        {/* 다음 버튼 (기능 없음) */}
         <button
-          onClick={() => setIsModalOpen(false)}
+          onClick={() => {
+            // 아무 기능 없음
+          }}
           className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition"
         >
-          닫기
+          다음
         </button>
       </div>
     </div>

@@ -23,9 +23,9 @@ const AssociationMapCard = ({ height }) => {
   ];
 
   const colorPalette = [
-    "#FF6B9D", "#4ECDC4", "#45B7D1", "#96CEB4",
-    "#FFE66D", "#A8E6CF", "#FF8B94", "#B8E6B8",
-    "#FFB3BA", "#C7CEEA", "#FFD93D", "#6BCF7F"
+    "#EC407A", "#4DB6AC", "#42A5F5", "#81C784",
+    "#FFCA28", "#A5D6A7", "#EF5350", "#66BB6A",
+    "#FF8A65", "#AB47BC", "#FFA726", "#66BB6A"
   ];
 
   const handleKeywordClick = async (keyword) => {

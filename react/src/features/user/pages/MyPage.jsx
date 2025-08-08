@@ -87,27 +87,27 @@ const MyPage = () => {
             <div className="font-semibold text-lg">{user?.nickname || '닉네임 없음'}</div>
             <div className="text-sm text-gray-500 mt-1">{user?.roles?.join(', ') || '직무 없음'}</div>
           </div>
+          {/* 프로필 하단 버튼 3개 - 세로(사이드바) 배치, 흰색, 폭 50%, 가운데 정렬 */}
+          <div className="flex flex-col items-center w-full mt-6 gap-2">
+            <button
+              className="w-1/2 py-2 bg-white !bg-white text-gray-800 rounded hover:!bg-black hover:!text-white text-sm font-semibold transition-colors duration-200"
+              style={{backgroundColor: 'white'}}
+              onClick={() => navigate('/subscription-management')}
+            >
+              구독관리
+            </button>
+            <button
+              className="w-1/2 py-2 bg-white !bg-white text-gray-800 rounded hover:!bg-black hover:!text-white text-sm font-semibold transition-colors duration-200"
+              style={{backgroundColor: 'white'}}
+              onClick={() => navigate('/inquiry')}
+            >
+              1:1문의
+            </button>
+          </div>
         </div>
 
-        <nav className="mt-8 flex flex-col space-y-4 bg-white p-4 rounded-lg shadow-sm">
-          
-          <div>
-            <h4 className="text-sm font-bold mb-2 text-gray-700">구독 관리</h4>
-          </div>
-          <ul className="flex flex-col space-y-1">
-            <li>
-              <a href="/mypage/account/info" className="block px-3 py-2 rounded hover:bg-gray-100 text-sm font-medium text-indigo-600">
-                내 정보 관리
-              </a>
-            </li>
-            <li>
-              <a href="/mypage/inquiry/write" className="block px-3 py-2 rounded hover:bg-gray-100 text-sm">
-                1:1 문의
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </section>
+         
+       </section>
 
       {/* 오른쪽 본문 */}
       <section className="flex-1">
@@ -151,23 +151,12 @@ const MyPage = () => {
             <div className="border-t pt-6">
               <h3 className="text-xl font-semibold mb-3">구독 정보</h3>
               <div className="flex items-center justify-between">
-                <div className="text-gray-500">구독중인 썸트렌드 어스 서비스가 없습니다.</div>
+                <div className="text-gray-500">구독중인 서비스가 없습니다.</div>
                 <button
                   className="px-3 py-2 text-sm bg-indigo-500 text-white rounded hover:bg-indigo-600"
-                  onClick={() => window.location.href = '/service/pricing'}
+                  onClick={() => window.location.href = '/subscribe'}
                 >
                   구독 하러가기
-                </button>
-              </div>
-            </div>
-
-            {/* 카드 정보 */}
-            <div className="border-t pt-6">
-              <h3 className="text-xl font-semibold mb-3">내 카드 정보</h3>
-              <div className="flex items-center justify-between">
-                <div className="text-gray-500">저장된 카드 정보가 없습니다.</div>
-                <button className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50">
-                  카드 정보 입력하기
                 </button>
               </div>
             </div>
