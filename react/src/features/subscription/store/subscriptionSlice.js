@@ -1,28 +1,34 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { cancelSubThunk, checkSubStatThunk, createSubThunk, fetchSubDetailsThunk, unSubNowThunk } from "./subscriptionThunk";
+import { createSlice, TaskAbortError } from "@reduxjs/toolkit";
+import { cancelSubThunk, checkSubStatThunk, createRefundRequestThunk, createSubThunk, fetchSubDetailsThunk, refundThunk, unSubNowThunk } from "./subscriptionThunk";
+
+/**
+ * @typedef {import('./subscriptionTypes').subscriptionDetails} SubDetails
+ */
+const initialState = {
+    // 구독상태
+    isActive: false,
+    /** @type {SubDetails|null} */
+    subscriptionDetails: null,
+
+    //로딩상태
+    loading: false,
+    createLoading: false, // 구독생성중 로딩
+    detailsLoading: false, // 구독조회중 로딩
+
+    //에러 상태
+    error: null,
+    createError: null, // 구독생성중 에러
+
+    //성공메세지
+    successMessage: null,
+}
 
 const subscriptionSlice = createSlice({
     name: 'subscription',
-    initialState: {
-        // 구독 상태
-        isActive: false,
-        subscriptionDetails: null,
-
-        // 로딩 상태
-        loading: false,
-        createLoading: false,
-        detailsLoading: false,
-
-        // 에러 상태
-        error: null,
-        createError: null,
-
-        // 성공 메세지
-        successMessage: null,
-    },
+    initialState,
     reducers: {
         clearError: (state) => {
-            state.err = null
+            state.error = null
             state.createError = null
         },
         clearSuccessMessage: (state) => {
@@ -34,6 +40,11 @@ const subscriptionSlice = createSlice({
             state.error = null
             state.createError = null
             state.successMessage = null
+        },
+        setSubscriptionActive: (state, action) => {
+            state.isActive = true
+            state.subscriptionDetails = action.payload
+            state.successMessage = '구독이 활성화되었습니다.'
         }
     },
     extraReducers: (builder) => {
@@ -60,8 +71,9 @@ const subscriptionSlice = createSlice({
                 state.error = null
             })
             .addCase(checkSubStatThunk.fulfilled, (state, action) => {
+                console.log('🟢 checkSubStatThunk.fulfilled payload:', action.payload)
                 state.loading = false
-                state.isActive = true
+                state.isActive = action.payload?.isActive ?? false
             })
             .addCase(checkSubStatThunk.rejected, (state, action) => {
                 state.loading = false
@@ -74,14 +86,26 @@ const subscriptionSlice = createSlice({
                 state.detailsLoading = true
                 state.error = null
             })
+            // .addCase(fetchSubDetailsThunk.fulfilled, (state, action) => {
+            //     console.log('🟢 fetchSubDetailsThunk.fulfilled payload:', action.payload)
+            //     state.detailsLoading = false
+            //     state.subscriptionDetails = action.payload
+            //     state.isActive = action.payload?.active || false
+            // })
+            // .addCase(fetchSubDetailsThunk.rejected, (state, action) => {
+            //     state.detailsLoading = false
+            //     state.error = action.payload?.message || '구독 정보 조회에 실패했습니다.'
+            //     state.subscriptionDetails = null
+            // })
             .addCase(fetchSubDetailsThunk.fulfilled, (state, action) => {
-                state.detailsLoading = true
-                state.subscriptionDetails = action.payload
-                state.isActive = action.payload?.isActive || false
+                console.log('🟢 fetchSubDetailsThunk.fulfilled payload:', action.payload.data)
+                state.detailsLoading = false
+                state.subscriptionDetails = action.payload.data?.details || null
+                state.isActive = action.payload.data?.status === 'ACTIVE'
             })
             .addCase(fetchSubDetailsThunk.rejected, (state, action) => {
                 state.detailsLoading = false
-                state.error = action.payload?.message || '구독 정보 조회에 실패했습니다.'
+                state.error = action.payload.data?.message || '구독 정보 조회에 실패했습니다.'
                 state.subscriptionDetails = null
             })
 
@@ -118,8 +142,41 @@ const subscriptionSlice = createSlice({
                 state.loading = false
                 state.error = action.payload?.message || '구독 해지에 실패했습니다.'
             })
+
+            //환불
+            .addCase(refundThunk.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(refundThunk.fulfilled, (state, action) => {
+                state.loading = false
+                state.subscriptionDetails = action.payload.data?.details || null
+                state.isActive = action.payload.data?.status === 'ACTIVE'
+                state.successMessage = action.payload?.message || '구독이 해지 및 환불되었습니다.'
+            })
+            .addCase(refundThunk.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload?.message || '구독 해지에 실패했습니다.'
+            })
+
+            .addCase(createRefundRequestThunk.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(createRefundRequestThunk.fulfilled, (state, action) => {
+                state.loading = false
+                state.successMessage = '환불 요청이 접수되었습니다. 관리자가 승인 후 처리됩니다.'
+                if (state.subscriptionDetails) {
+                    state.subscriptionDetails.status = 'CANCELLED'
+                }
+                state.isActive = false
+            })
+            .addCase(createRefundRequestThunk.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload?.message || '환불 요청에 실패했습니다.'
+            })
     }
 })
 
-export const { clearError, clearSuccessMessage, resetSubscriptionState } = subscriptionSlice.actions
+export const { clearError, clearSuccessMessage, resetSubscriptionState, setSubscriptionActive } = subscriptionSlice.actions
 export default subscriptionSlice.reducer

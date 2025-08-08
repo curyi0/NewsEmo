@@ -2,17 +2,17 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { loginThunk } from '../store/authThunk'
-import { clearWarning } from '../store/authSlice'
+import { clearWarning, clearError } from '../store/authSlice'
 import { Input } from 'antd'
 import { ApiError } from '@shared/errors/ApiError'
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: '', password: '' })
-  const [error, setError] = useState('')
+  // const [error, setError] = useState('')
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const { loading, warning } = useSelector(state => state.auth)
+  const { loading, warning, error } = useSelector(state => state.auth)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -21,21 +21,23 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
+    // setError('')
     dispatch(clearWarning())
+    dispatch(clearError())
 
     try {
       await dispatch(loginThunk(form)).unwrap()
       navigate('/')
     } catch (err) {
       console.error('로그인 실패:', err)
-      if (err?.code && err?.message) {
-        setError(err.message)
-      } else if (err?.response?.data?.message) {
-        setError(err.response.data.message)
-      } else {
-        setError('서버 오류가 발생했습니다.')
-      }
+      // if (err?.code && err?.message) {
+      //   setError(err.message)
+      // } else if (err?.response?.data?.message) {
+      //   setError(err.response.data.message)
+      // } else {
+      //   setError('서버 오류가 발생했습니다.')
+      // }
+      
       //   console.log('에러 응답:', err.response)
       //   console.log('에러 응답 헤더:', err.response.headers)
       //   console.log('에러 응답 데이터:', err.response.data)

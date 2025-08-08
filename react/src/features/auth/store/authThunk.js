@@ -1,33 +1,61 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { authService } from '../services/authService'
-import { setUser, setLoading, setError, clearAuth } from './authSlice'
+import { setUser, setLoading, setError, clearAuth, setWarning } from './authSlice'
 import { ApiError } from '../../../shared/errors/ApiError'
+import { checkSubStatThunk, fetchSubDetailsThunk } from '../../subscription/store/subscriptionThunk'
+import { resetSubscriptionState } from '../../subscription/store/subscriptionSlice'
 
 export const loginThunk = createAsyncThunk(
   'auth/login',
-  async (credentials, { dispatch, rejectWithValue }) => {
+  async ( credentials, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true))
-      const user = await authService.loginAndFetchUser(credentials)
+      const { user, message } =await authService.loginService(credentials)
+      if (message) {
+        dispatch(setWarning(message))
+      }
       dispatch(setUser(user))
       return user
     } catch (err) {
       dispatch(setError(err.message))
-      // 여기서 백엔드 에러 응답이 있으면 그대로 넘김
-      if (err.response?.data) {
-        return rejectWithValue(err.response.data)
-      }
-
-      // ApiError 등 객체라면 그 자체를 넘기고, fallback 메시지 제공
-      if (err instanceof ApiError) {
-        return rejectWithValue({ code: err.code, message: err.message })
-      }
-      return rejectWithValue(err.message || '로그인중 알 수 없는 오류 발생' )
+      return rejectWithValue(err.message)
     } finally {
       dispatch(setLoading(false))
     }
   }
 )
+// export const loginThunk = createAsyncThunk(
+//   'auth/login',
+//   async (credentials, { dispatch, rejectWithValue }) => {
+//     try {
+//       dispatch(setLoading(true))
+//       const user = await authService.loginAndFetchUser(credentials)
+//       dispatch(setUser(user))
+
+//       //구독상태확인
+//       const statusAction = await dispatch(checkSubStatThunk())
+//       const status = statusAction.payload
+//       if (status?.isActive) {
+//         dispatch(fetchSubDetailsThunk())
+//       }
+//       return user
+//     } catch (err) {
+//       dispatch(setError(err.message))
+//       // 여기서 백엔드 에러 응답이 있으면 그대로 넘김
+//       if (err.response?.data) {
+//         return rejectWithValue(err.response.data)
+//       }
+
+//       // ApiError 등 객체라면 그 자체를 넘기고, fallback 메시지 제공
+//       if (err instanceof ApiError) {
+//         return rejectWithValue({ code: err.code, message: err.message })
+//       }
+//       return rejectWithValue(err.message || '로그인중 알 수 없는 오류 발생' )
+//     } finally {
+//       dispatch(setLoading(false))
+//     }
+//   }
+// )
 
 export const signupThunk = createAsyncThunk(
   'auth/signup',
@@ -81,8 +109,16 @@ export const restoreUserThunk = createAsyncThunk(
             const user = await authService.tryRestoreUser()
             if (user) {
                 dispatch(setUser(user))
+                const statusAction = await dispatch(checkSubStatThunk())
+                const status = statusAction.payload
+                console.log(statusAction.payload)
+                if (status?.isActive) {
+                  const detailsAction = await dispatch(fetchSubDetailsThunk())
+                  console.log('fetchSubDetailsThunk 결과:', detailsAction)
+                }    
             } else {
                 dispatch(clearAuth())
+                dispatch(resetSubscriptionState())
             }
         return user
         } finally {

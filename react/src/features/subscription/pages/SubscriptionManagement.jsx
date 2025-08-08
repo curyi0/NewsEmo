@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { cancelSubThunk, fetchSubDetailsThunk, unSubNowThunk } from '../store/subscriptionThunk'
+import { cancelSubThunk, createRefundRequestThunk, fetchSubDetailsThunk, refundThunk, revertCancelThunk, unSubNowThunk } from '../store/subscriptionThunk'
 import { clearError, clearSuccessMessage } from '../store/subscriptionSlice'
 import { useNavigate } from 'react-router'
 
 const SubscriptionManagement = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const [refundAmount, setRefundAmount] = useState()
+
+    // redux에서 직접 가져오는 state
     const {
         subscriptionDetails,
         isActive,
@@ -18,12 +21,14 @@ const SubscriptionManagement = () => {
 
     const [showCancelConfirm, setShowCancelConfirm] = useState(false)
     const [showUnsubConfirm, setShowUnsubConfirm] = useState(false)
+    const [showRevertConfirm, setShowRevertConfirm] = useState(false)
 
+    // 컴포넌트 마운트시에만 구독 상세 정보 조회
     useEffect(() => {
-        if (isActive) {
+        if (isActive && !subscriptionDetails && !detailsLoading) {
             dispatch(fetchSubDetailsThunk())
         }
-    }, [dispatch, isActive])
+    }, [dispatch, isActive, subscriptionDetails, detailsLoading])
 
     useEffect(() => {
         if (successMessage) {
@@ -34,15 +39,35 @@ const SubscriptionManagement = () => {
         }
     }, [successMessage, dispatch])
 
-    const handleCancel = async () => {
-        await dispatch(cancelSubThunk())
+    const handleCancel = () => {
+        dispatch(cancelSubThunk())
         setShowCancelConfirm(false)
         //상세정보 다시 조회
         dispatch(fetchSubDetailsThunk())
     }
 
-    const handleUnsubscribe = async () => {
-        await dispatch(unSubNowThunk())
+    const handleRevertCancel = () => {
+        //dispatch(subscriptionSlice.actions.setStatusActive())
+        dispatch(revertCancelThunk())
+            .unwrap()
+            .then(() => {
+                setShowRevertConfirm(false)
+                dispatch(fetchSubDetailsThunk())
+            })
+            .catch(()=>{
+                setShowRevertConfirm(false)
+            })
+    }
+
+    const handleUnsubscribe = () => {
+        dispatch(unSubNowThunk())
+        setShowUnsubConfirm(false)
+    }
+
+    const handleRefund = () => {
+        // dispatch(refundThunk(refundAmount))
+        // dispatch(refundThunk({amount: refundAmount || null}))
+        dispatch(createRefundRequestThunk())
         setShowUnsubConfirm(false)
     }
 
@@ -66,6 +91,9 @@ const SubscriptionManagement = () => {
             <div>구독 정보를 불러오는 중...</div>
         )
     }
+
+    // console.log('isActive:', isActive)
+    // console.log('subscriptionDetails:', subscriptionDetails)
 
     if (!isActive || !subscriptionDetails) {
         return (
@@ -142,12 +170,23 @@ const SubscriptionManagement = () => {
                 <label>
                     상태
                 </label>
-                <span className={`${subscriptionDetails.isActive
-                    ? 'bg-green-100 test-green-800'
-                    : 'bg-red-100 text-red-800'
-                    }`}>
-                    {subscriptionDetails.isActive ? '활성' : '비활성'}
-                </span>
+                <div>
+                    <span className={`${
+                        subscriptionDetails.status === 'ACTIVE' ? 'bg-green-100 text-green-800'
+                        : subscriptionDetails.status === 'CANCELLED' ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                        }`}>
+                        {subscriptionDetails.status === 'ACTIVE' && '활성'}
+                        {subscriptionDetails.status === 'CANCELLED' && '해지 예약됨'}
+                        {subscriptionDetails.status === 'EXPIRED' && '만료됨'}
+                    </span>
+                    {subscriptionDetails.status === 'CANCELLED' && (
+                        <button onClick={()=> setShowRevertConfirm(true)}>
+                            해지 예약 취소
+                        </button>
+                    )}
+                </div>
+                
             </div>
 
             {/* 구독 관리 버튼 */}
@@ -189,12 +228,40 @@ const SubscriptionManagement = () => {
                 </div>
             )}
 
+            {/*해지 예약 취소 확인 모달 */}
+            {showRevertConfirm && (
+                <div>
+                    <h3>해지 예약 취소</h3>
+                    <p>해지 예약을 취소하시겠습니까? 구독은 계속 유지됩니다.</p>
+                    <div>
+                        <button onClick={()=>setShowRevertConfirm(false)}>취소</button>
+                        <button onClick={handleRevertCancel} disabled={loading}>
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/*즉시 해지 확인 모달*/}
             {showUnsubConfirm && (
                 <div>
                     <h3>즉시 해지</h3>
-                    <p>
+                    {/* <p>
                         구독을 즉시 해지하시겠습니까? 이 작업은 되돌릴 수 없으며, 남은 구독 기간에 대한 환불은 불가능합니다.
+                    </p> */}
+                    {/* <p>
+                        구독을 즉시 해지하시겠습니까?
+                        {` 남은 기간에 대한 환불${refundAmount ? ` (${refundAmount}원)` : ''}이 진행됩니다.`}
+                    </p>
+                    <input
+                        type='number'
+                        placeholder='부분 환불 금액(선택)'
+                        value={refundAmount || 0}
+                        onChange={(e) => setRefundAmount(e.target.value)}
+                    /> */}
+                    <p>
+                        구독을 즉시 해지하시겠습니까?
+                        환불은 관리자가 확인 후 처리됩니다.
                     </p>
                     <div>
                         <button
@@ -203,7 +270,7 @@ const SubscriptionManagement = () => {
                             취소
                         </button>
                         <button
-                            onClick={handleUnsubscribe}
+                            onClick={handleRefund}
                             disabled={loading}
                         >
                             즉시 해지
