@@ -43,6 +43,7 @@ import AdminUserPage from '../../features/admin/pages/AdminUserPage'
 import AdminDashboard from '../../features/admin/pages/AdminDashboard'
 import ProtectedAdminRoute from './ProtectedAdminRoute'
 import AdminRefundPage from '../../features/admin/pages/AdminRefundPage'
+import AdminRefreshTokenPage from '../../features/admin/pages/AdminRefreshTokensPage'
 // SearchBar 정의 부분
 // const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => { // (A) 여기서 받는 props는 onSubmit, loading, navigate 뿐입니다.
 //   // console.log("임포트확인:" ,setSearchTerm)
@@ -220,6 +221,7 @@ const AppRouter = () => {
                     <Route path='/admin/dashboard' element={<AdminDashboard />} />
                     <Route path='/admin/users' element={<AdminUserPage />} />
                     <Route path='/admin/refunds' element={<AdminRefundPage />} />
+                    <Route path='/admin/refresh-tokens' element={<AdminRefreshTokenPage />} />
                 </Route>
             </Routes>
             <Footer />
