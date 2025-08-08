@@ -14,7 +14,7 @@ import SignupPage from '../../features/auth/pages/SignupPage'
 import OAuth2LinkComplete from '../../features/auth/components/OAuth2LinkComplete'
 import PasswordResetRequestPage from '../../features/auth/pages/PasswordResetRequestPage'
 import PasswordResetPage from '../../features/auth/pages/PasswordResetPage'
-import { withAuthGuard } from '../../features/auth/components/withAuthGuard'
+import { withAdminGuard, withAuthGuard } from '../../features/auth/components/withAuthGuard'
 import AuthRedirectHandler from '../../shared/utils/api/AuthRedirectHandler'
 // -------------------------------------------------------------------------
 // 관리자 페이지
@@ -43,7 +43,7 @@ import Chatbot from '../../ChatBot'
 import SubscriptionManagement from '../../features/subscription/pages/SubscriptionManagement'
 import '../../App.css'
 import Subscribe from '../../pages/Subscribe'
-
+import SubscriptionPlans from '../../features/subscription/pages/SubscriptionPlans'
 
 const AppRouter = () => {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated)

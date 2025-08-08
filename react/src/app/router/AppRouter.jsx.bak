@@ -55,12 +55,12 @@ const AppRouter = () => {
 
     // const [loading, setLoading] = useState(false);
     // const [company, setCompany] = useState([]);
-    const [searchTerm, setSearchTerms] = useState("");
-    const [searchType, setSearchType] = useState("")
+    // const [searchTerm, setSearchTerms] = useState("");
+    // const [searchType, setSearchType] = useState("")
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const location = useLocation()
+    // const location = useLocation()
 
 
     // const toLogin = () => {
@@ -115,7 +115,7 @@ const AppRouter = () => {
             // Content={Content}
             />
 
-            <main className="min-h bg-slate-200 max-w-7xl  px-4 sm:px-6 lg:px-4 py-3 flex-grow">
+            <main className="min-h bg-slate-200 w-[92%] ml-[4%] px-4 sm:px-6 lg:px-4 py-3 flex-grow">
                
             
             
