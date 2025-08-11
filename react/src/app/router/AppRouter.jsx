@@ -186,7 +186,6 @@ const AppRouter = () => {
 
                 {/*------------------------------*/}
                 <Route path="/" element={<Main />} />
-                {/* <Route path="/pageA" element={<PageA />} /> */}
                 <Route path="/info" element={<Info />} />
 
                 <Route path="/register" element={<Register />} />
@@ -200,7 +199,7 @@ const AppRouter = () => {
                     {/* 기본 페이지 리디렉션 */}
                     <Route index element={<Navigate to="mention" replace />} />
                     <Route path="mention" element={<MentionPage />} />
-                    <Route path="company" element={<CompanyInfo />} />
+                    <Route path="company/:id" element={<CompanyInfo />} />
                     <Route path="companyreview" element={<CompanyReview />} />
                     <Route path="reputation" element={<Reputation />} />
                     <Route path="association" element={<AssociationPage />} />

@@ -10,6 +10,8 @@ import reviewAnalysis from './reducerSlices/reviewAnalysisSlice'
 import adminUsers from '@features/admin/store/adminUserSlice'
 import adminRefunds from '@features/admin/store/adminRefundSlice'
 import adminRefreshToken from '@features/admin/store/adminRefreshTokenSlice'
+import chatbot from './reducerSlices/chatbotSlice'
+
 
 const store = configureStore({
     reducer: {
@@ -24,6 +26,7 @@ const store = configureStore({
         adminUsers,
         adminRefunds,
         adminRefreshToken,
+        chatbot  // 검색용
         // info
     },
     devTools: true,
