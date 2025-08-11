@@ -59,7 +59,41 @@ const MyPage = () => {
 
   return (
     <main className="flex flex-col sm:flex-row gap-6 max-w-6xl mx-auto p-6">
-      <section className="w-full sm:w-64 flex-shrink-0">
+      {/*이메일 인증 필요 섹션 */}
+      {user &&! user.emailVerified && (
+        <div>
+          <h2>이메일 인증 필요</h2>
+          <p>계정을 안전하게 사용하기 위해 이메일 인증을 완료해주세요.</p>
+          <button 
+              onClick={handleResendVerification}
+              disabled={resendLoading || resendCooldown > 0}
+          >
+              {resendLoading
+                  ? '발송 중...'
+                  : resendCooldown > 0
+                  ? `재발송 (${resendCooldown}초 후)`
+                  : '인증 메일 재발송'}
+          </button>
+          <button onClick={() => dispatch(fetchUserProfileThunk())}>
+              새로고침
+          </button>
+          {resendCooldown > 0 && (
+            <p style={{ 
+                color: '#856404', 
+                fontSize: '14px', 
+                marginTop: '10px',
+                marginBottom: 0 
+            }}>
+              스팸 방지를 위해 잠시 후 다시 시도해주세요.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/*이메일 인증 완료 섹션 */}
+      {user && user.emailVerified && (
+        <>
+        <section className="w-full sm:w-64 flex-shrink-0">
         <div className="flex flex-col items-center space-y-3">
           <div className="relative w-28 h-28 rounded-full overflow-hidden">
             <img
@@ -136,11 +170,10 @@ const MyPage = () => {
 
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm text-gray-600 mb-1">직무</h4>
+                <h4 className="text-sm text-gray-600 mb-1">권한</h4>
                 <p className="text-base">{user?.roles?.join(', ') || '직무 없음'}</p>
               </div>
             </div>
-
             <div className="border-t pt-6">
               <h3 className="text-xl font-semibold mb-3">구독 정보</h3>
               <div className="flex items-center justify-between">
@@ -165,6 +198,8 @@ const MyPage = () => {
           </div>
         </article>
       </section>
+      </>
+      )}
     </main>
   )
 }

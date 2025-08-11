@@ -41,4 +41,7 @@ export const userApi = {
    */
   getPendingSocialLink: () =>
     getAndUnwrap('/users/pending-social-link'),
+
+  // // 회원 탈퇴
+  // withdrawApi: ()
 }
