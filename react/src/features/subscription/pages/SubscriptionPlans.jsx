@@ -201,7 +201,7 @@ const SubscriptionPlans = () => {
                   className="hidden"
                 />
                 <p className="text-sm font-semibold">월간 요금제</p>
-                <p className="text-gray-500 text-sm">₩119,000</p>
+                <p className="text-gray-500 text-sm">₩9,900</p>
               </label>
               <label className={`border ${selectedPlan === PLAN_TYPES.YEARLY ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}>
                 <input
@@ -212,7 +212,7 @@ const SubscriptionPlans = () => {
                   className="hidden"
                 />
                 <p className="text-sm font-semibold">연간 요금제</p>
-                <p className="text-gray-500 text-sm">₩1,199,000 (₩99,900/월)</p>
+                <p className="text-gray-500 text-sm">₩99,000 (₩9,900/월)</p>
                 <p className="text-green-600 text-xs mt-1">16% 할인</p>
               </label>
             </div>
