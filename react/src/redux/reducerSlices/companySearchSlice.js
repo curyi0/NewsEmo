@@ -22,7 +22,7 @@ export const fetchCompaniesByType = createAsyncThunk(
   "company/fetchByType",
   async (type) => {
     try {
-      const response = await axios.get(`${API_URL}?type=${encodeURIComponent(type)}`);
+      const response = await axios.get(`${API_URL}?category=${encodeURIComponent(type)}`);
       console.log(response.data);
       return response.data;
     } catch (error) {
@@ -39,6 +39,8 @@ const companySearchSlice = createSlice({
     status: "idle",
     searchTerm: "",
     searchType: "",
+    total: 0,
+    keyword: ""
   },
   reducers: {
     setSearchTerm: (state, action) => {
@@ -55,7 +57,9 @@ const companySearchSlice = createSlice({
       })
       .addCase(fetchCompaniesByName.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload;
+        state.list = action.payload.companies;
+        state.total= action.payload.total_count
+        state.keyword= action.payload.search_keyword
       })
       .addCase(fetchCompaniesByName.rejected, (state) => {
         state.status = "failed";
@@ -66,8 +70,10 @@ const companySearchSlice = createSlice({
       })
       .addCase(fetchCompaniesByType.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.list = action.payload;
-      })
+        state.list = action.payload.companies;
+        state.total= action.payload.total_count
+        state.keyword= action.payload.search_keyword   //검색어
+         })
       .addCase(fetchCompaniesByType.rejected, (state) => {
         state.status = "failed";
       });

@@ -1,256 +1,245 @@
-import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { PLAN_TYPES, PLAN_INFO } from '@features/subscription/services/subscriptionService'
-import { clearError, clearSuccessMessage } from '@features/subscription/store/subscriptionSlice'
-import { checkSubStatThunk, createSubThunk } from '@features/subscription/store/subscriptionThunk'
-import { api } from '../../../shared/utils/api'
-import { setSubscriptionActive } from '../store/subscriptionSlice'
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { PLAN_TYPES, PLAN_INFO } from '@features/subscription/services/subscriptionService';
+import { clearError, clearSuccessMessage, setSubscriptionActive } from '@features/subscription/store/subscriptionSlice';
+import { checkSubStatThunk } from '@features/subscription/store/subscriptionThunk';
+import { api } from '../../../shared/utils/api';
 
 const SubscriptionPlans = () => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const {
-        isActive,
-        createLoading,
-        createError,
-        successMessage
-    } = useSelector(state => state.subscription)
-    const [ selectedPlan, setSelectedPlan ] = useState(null)
-    const [ showConfirm, setShowConfirm ] = useState(false)
-    const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {
+    isActive,
+    createLoading,
+    createError,
+    successMessage
+  } = useSelector((state) => state.subscription);
+  const [selectedPlan, setSelectedPlan] = useState(PLAN_TYPES.MONTHLY);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(PLAN_TYPES.MONTHLY);
 
-    useEffect(() => {
-        // 구독 상태 확인
-        dispatch(checkSubStatThunk())
-    }, [dispatch])
+  useEffect(() => {
+    dispatch(checkSubStatThunk());
+  }, [dispatch]);
 
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => {
-                dispatch(clearSuccessMessage())
-                navigate('/subscription/manage')
-            }, 2000)
-            return () => clearTimeout(timer)
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        dispatch(clearSuccessMessage());
+        navigate('/subscription/manage');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, dispatch, navigate]);
+
+  const handlePlanSelect = () => {
+    setSelectedPlan(selectedTab);
+    setShowConfirm(true);
+  };
+
+  const generateMerchantUid = () => `order_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
+  const handlePay = () => {
+    if (!selectedPlan) return;
+    const IMP = window.IMP;
+    IMP.init('imp75507553');
+
+    const merchantUid = generateMerchantUid();
+    const planInfo = PLAN_INFO[selectedPlan];
+    setLoading(true);
+
+    IMP.request_pay(
+      {
+        pg: 'uplus',
+        pay_method: 'card',
+        merchant_uid: merchantUid,
+        name: `${planInfo.name} 구독 결제`,
+        amount: planInfo.price,
+        buyer_email: 'chlorella71@naver.com',
+        buyer_name: 'chlorella71',
+      },
+      async (rsp) => {
+        if (rsp.success) {
+          try {
+            const res = await api.post('/payment/complete', {
+              impUid: rsp.imp_uid,
+              merchantUid: rsp.merchant_uid,
+              amount: rsp.paid_amount,
+              planType: selectedPlan.toUpperCase(),
+            });
+            const subscription = res.data.subscription;
+            dispatch(setSubscriptionActive(subscription));
+            alert('결제가 완료되었습니다.');
+            navigate('/subscription/manage');
+          } catch (err) {
+            alert('서버 결제 처리에 실패했습니다.');
+          } finally {
+            setLoading(false);
+            setShowConfirm(false);
+          }
+        } else {
+          alert('결제 실패: ' + rsp.error_msg);
+          setLoading(false);
         }
-    }, [successMessage, dispatch, navigate])
+      }
+    );
+  };
 
-    const handlePlanSelect = (planType) => {
-        setSelectedPlan(planType)
-        setShowConfirm(true)
-    }
+  const formatPrice = (price) => new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price);
 
-    const generateMerchantUid = () => {
-        return `order_${new Date().getTime()}_${Math.floor(Math.random() * 1000)}`
-    }
-
-    // 아임포트 결제 호출
-    const handlePay = () => {
-        if (!selectedPlan) return
-        const IMP = window.IMP
-        IMP.init('imp75507553')
-
-        const merchantUid = generateMerchantUid()
-
-        const planInfo = PLAN_INFO[selectedPlan]
-        setLoading(true)
-
-        IMP.request_pay(
-            {
-                pg: 'uplus',
-                pay_method: 'card',
-                merchant_uid: merchantUid,
-                name: `${planInfo.name} 구독 결제`,
-                amount: planInfo.price,
-                buyer_email: 'chlorella71@naver.com',
-                buyer_name: 'chlorella71',
-            },
-            async (rsp) => {
-                if (rsp.success) {
-                    console.log('아임포트 결제 성공: ', rsp)
-                    try {
-                        // 서버에 결제 완료 알림
-                        const res = await api.post('/payment/complete', {
-                            impUid: rsp.imp_uid,
-                            merchantUid: rsp.merchant_uid,
-                            amount: rsp.paid_amount,
-                            planType: selectedPlan.toUpperCase(),
-                        })
-                        console.log('서버 결제 처리 결과: ', res.data)
-                        const subscription = res.data.subscription
-                        dispatch(setSubscriptionActive(subscription))
-                        alert('결제가 완료되었습니다.')
-                        navigate('/subscription/manage')
-                    } catch (err) {
-                        console.error('서버 결제 처리 실패: ', err)
-                        alert('서버 결제 처리에 실패했습니다.')
-                    } finally {
-                        setLoading(false)
-                        setShowConfirm(false)
-                    }
-                } else {
-                    console.error('결제 실패: ', rsp.error_msg)
-                    alert('결제 실패: ' + rsp.error_msg)
-                    setLoading(false)
-                }
-            }
-        )
-    }
-
-    const handleSubscribe = async () => {
-        if (!selectedPlan) return
-
-        await dispatch(createSubThunk(selectedPlan))
-        setShowConfirm(false)
-    }
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('ko-KR', {
-            style: 'currency',
-            currency: 'KRW'
-        }).format(price)
-    }
-
-    const PlanCard = ({ planType, planInfo }) => (
-        <div>
-            <div style={{ border: '1px solid black', padding: '10px', margin: '10px '}}>
-                <h3>
-                    {planInfo.name}
-                </h3>
-                <div>
-                    <span>{formatPrice(planInfo.price)}</span>
-                    {planType !== PLAN_TYPES.TRIAL && (
-                        <span>/ {planInfo.duration}</span>
-                    )}
-                </div>
-                <p>
-                    {planInfo.description}
-                </p>
-                {/* 플랜 혜택 */}
-                <div>
-                    <ul>
-                        <li>모든 기능 이용 가능</li>
-                        <li>무제한 검색</li>
-                        <li>고객 지원</li>
-                        {planType === PLAN_TYPES.YEARLY && (
-                            <li>2개월 무료 (연간 결제 혜택)</li>
-                        )}
-                    </ul>
-                </div>
-                <button
-                    onClick={() => handlePlanSelect(planType)}
-                    disabled={createLoading || isActive}
-                >
-                    {isActive ? '이미 구독 중' : createLoading ? '처리 중...' : '구독하기'}
-                </button>
-            </div>
-        </div>
-        
-    )
-    
-    if (isActive) {
-        return (
-            <div>
-                <h2>이미 구독 중입니다</h2>
-                <p>현재 활성화된 구독이 있습니다.</p>
-                <button
-                    onClick={() => navigate('/subscription/manage')}>구독 관리하기
-                </button>
-            </div>
-        )
-    }
-
+  if (isActive) {
     return (
-        <div>
-            <div>
-                <h1>구독 플랜 선택</h1>
-                <p>NewsEmo의 모든 기능을 이용하세요</p>
-            </div>
-            {/* 성공/에러 메시지 */}
-            {successMessage && (
-                <div>{successMessage}</div>
-            )}
-            {createError && (
-                <div>
-                    <span>{createError}</span>
-                    <button onClick={() => dispatch(clearError())}>
-                        x
-                    </button>
-                </div>
-            )}
-            {/*플랜 카드들*/}
-            <div>
-                {/* <PlanCard
-                    planType={PLAN_TYPES.TRIAL}
-                    planInfo={PLAN_INFO[PLAN_TYPES.TRIAL]}
-                /> */}
-                <PlanCard
-                    planType={PLAN_TYPES.MONTHLY}
-                    planInfo={PLAN_INFO[PLAN_TYPES.MONTHLY]}
+      <div className="text-center py-10">
+        <h2 className="text-2xl font-semibold mb-2">이미 구독 중입니다</h2>
+        <p className="text-gray-600 mb-4">현재 활성화된 구독이 있습니다.</p>
+        <button
+          onClick={() => navigate('/subscription/manage')}
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+        >
+          구독 관리하기
+        </button>
+      </div>
+    );
+  }
+
+  const getPaymentDate = () => {
+    const today = new Date();
+    const paymentDate = new Date(today);
+    paymentDate.setDate(today.getDate() + 30);
+    return paymentDate.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const planInfo = PLAN_INFO[selectedTab];
+
+  return (
+    <div className="max-w-3xl mx-auto p-6">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-2">구독 플랜 선택</h1>
+        <p className="text-gray-600">NewsEmo의 모든 기능을 이용하세요</p>
+      </div>
+
+      {successMessage && <div className="text-green-600 text-center mb-4">{successMessage}</div>}
+      {createError && (
+        <div className="bg-red-100 text-red-700 p-3 rounded mb-4 flex justify-between">
+          <span>{createError}</span>
+          <button onClick={() => dispatch(clearError())}>×</button>
+        </div>
+      )}
+
+      <div className="flex justify-center mb-6">
+        <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setSelectedTab(PLAN_TYPES.MONTHLY)}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+              selectedTab === PLAN_TYPES.MONTHLY
+                ? 'bg-white text-gray-800 shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            월간
+          </button>
+          <button
+            onClick={() => setSelectedTab(PLAN_TYPES.YEARLY)}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
+              selectedTab === PLAN_TYPES.YEARLY
+                ? 'bg-white text-gray-800 shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            연간
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-xl p-6 border border-gray-200 text-center">
+        <h3 className="text-xl font-bold text-gray-800 mb-2">{planInfo.name}</h3>
+        <div className="text-lg font-semibold text-gray-700 mb-3">
+          {formatPrice(planInfo.price)}
+          <span className="text-sm text-gray-500"> / {planInfo.duration}</span>
+        </div>
+        <p className="text-gray-600 text-sm mb-4">{planInfo.description}</p>
+        <ul className="list-disc list-inside text-sm text-gray-700 mb-4 text-left">
+          <li>모든 기능 이용 가능</li>
+          <li>무제한 검색</li>
+          <li>고객 지원</li>
+          {selectedTab === PLAN_TYPES.YEARLY && <li>2개월 무료 (연간 결제 혜택)</li>}
+        </ul>
+        <button
+          onClick={handlePlanSelect}
+          disabled={createLoading || isActive}
+          className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+        >
+          {isActive ? '이미 구독 중' : createLoading ? '처리 중...' : '구독하기'}
+        </button>
+      </div>
+
+      {showConfirm && selectedPlan && (
+        <div className="animate-fadeIn fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4" onClick={() => setShowConfirm(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-3xl w-full relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowConfirm(false)}
+              className="absolute -top-0 -right-9 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-0.5 px-2 rounded-full transition shadow-lg z-10"
+            >
+              ✕
+            </button>
+            <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">Pro 무료 체험 시작</h3>
+            <p className="text-gray-600 mb-6 text-center">30일 동안 모든 기능을 자유롭게 사용해보세요.</p>
+
+            <div className="grid sm:grid-cols-2 gap-4 mb-6">
+              <label className={`border ${selectedPlan === PLAN_TYPES.MONTHLY ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}>
+                <input
+                  type="radio"
+                  name="modalPlan"
+                  checked={selectedPlan === PLAN_TYPES.MONTHLY}
+                  onChange={() => setSelectedPlan(PLAN_TYPES.MONTHLY)}
+                  className="hidden"
                 />
-                <PlanCard
-                    planType={PLAN_TYPES.YEARLY}
-                    planInfo={PLAN_INFO[PLAN_TYPES.YEARLY]}
+                <p className="text-sm font-semibold">월간 요금제</p>
+                <p className="text-gray-500 text-sm">₩9,900</p>
+              </label>
+              <label className={`border ${selectedPlan === PLAN_TYPES.YEARLY ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}>
+                <input
+                  type="radio"
+                  name="modalPlan"
+                  checked={selectedPlan === PLAN_TYPES.YEARLY}
+                  onChange={() => setSelectedPlan(PLAN_TYPES.YEARLY)}
+                  className="hidden"
                 />
-            </div>
-            {/* 자주 묻는 질문 */}
-            <div>
-                <h3>자주 묻는 질문</h3>
-                <div>
-                    <h4>구독을 언제든지 해지할 수 있나요?</h4>
-                    <p>
-                        네, 언제든지 구독을 해지하실 수 있습니다. 해지 후에도 현재 구독 기간이 끝날 때까지는 모든 기능을 이용하실 수 있습니다.
-                    </p>
-                </div>
-                <div>
-                    <h4>무료 체험 후 자동 결제되나요?</h4>
-                    <p>
-                        아니요, 무료 체험 기간이 끝나면 자동으로 결제되지 않습니다. 계속 이용하시려면 별도로 구독을 신청해주셔야 합니다.
-                    </p>
-                </div>
-                <div>
-                    <h4>연간 구독의 혜택은 무엇인가요?</h4>
-                    <p>
-                        연간 구독 시 2개월 무료 혜택을 받으실 수 있어 월간 구독 대비 약 17% 할인된 가격으로 이용하실 수 있습니다.
-                    </p>
-                </div>
-                <div>
-                    <h4>환불 정책은 어떻게 되나요?</h4>
-                    <p>
-                        구독 후 7일 이내 취소 시 전액 환불이 가능합니다. 그 이후에는 사용한 기간을 제외한 잔여 기간에 대해 환불해드립니다.
-                    </p>
-                </div>
+                <p className="text-sm font-semibold">연간 요금제</p>
+                <p className="text-gray-500 text-sm">₩99,000 (₩9,900/월)</p>
+                <p className="text-green-600 text-xs mt-1">16% 할인</p>
+              </label>
             </div>
 
-            {/* 구독 확인 모달 */}
-            {showConfirm && selectedPlan && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'rgba(0,0,0,0.5)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                    <div style={{ background: 'white', padding: 20}}>
-                        <h3>구독 확인</h3>
-                        <p>
-                            <strong>{PLAN_INFO[selectedPlan]?.name}</strong> 플랜을 구독하시겠습니까?
-                        </p>
-                        <p>가격: {formatPrice(PLAN_INFO[selectedPlan]?.price || 0)}</p>
-                        <p>기간: {PLAN_INFO[selectedPlan]?.duration}</p>
-                        <button onClick={() => setShowConfirm(false)}>
-                            취소
-                        </button>
-                        {/* <button
-                            onClick={handleSubscribe}                    >
-                            {createLoading ? '처리 중...' : '구독하기'}
-                        </button> */}
-                        <button
-                            onClick={handlePay} disabled={loading}                    >
-                            {loading ? '처리 중...' : '구독하기'}
-                        </button>
-                    </div>               
-                </div>
-            )}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm space-y-2">
+              <div className="flex justify-between">
+                <span>결제 기한</span>
+                <span className="font-medium">{getPaymentDate()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>오늘 결제 금액</span>
+                <span className="font-semibold text-green-600">₩0 (30일 무료 체험)</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handlePay}
+              disabled={loading}
+              className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition"
+            >
+              {loading ? '처리 중...' : '다음'}
+            </button>
+          </div>
         </div>
-    )
-}
-export default SubscriptionPlans
+      )}
+    </div>
+  );
+};
+
+export default SubscriptionPlans;

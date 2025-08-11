@@ -27,29 +27,29 @@ const MentionPage = () => {
   ];
   
   return (
-    <Row gutter={20}>
-      <Col xs={24}>
-        <div style={{ padding: 0, background: '#EBE4FF', marginBottom: 20, 
-            display: 'flex', alignItems: 'center'
-          }}>
-          <MentionTopCard maxDate={maxDate}/>
-        </div>
-      </Col>
+    <div className="min-h-screen bg-[#FBF7F4] p-1">
+      <Row gutter={20}>
+        <Col xs={24}>
+          <div className="mb-3">
+            <MentionTopCard maxDate={maxDate}/>
+          </div>
+        </Col>
 
-      <Col xs={24} md={14}>
-        <MentionTrendCard onMaxDateChange={setMaxDate} height={cardHeight}/>
-      </Col>
-      <Col xs={24} md={10}>
-        <MentionChannelCard
-          keyword="삼성전자"
-          period="2025-06-09 ~ 2025-06-13"
-          totalCount={1000}
-          viewCount={500}
-          items={dummyItems}
-          height={cardHeight}
-        />
-      </Col>
-    </Row>
+        <Col xs={24} md={14}>
+          <MentionTrendCard onMaxDateChange={setMaxDate} height={cardHeight}/>
+        </Col>
+        <Col xs={24} md={10}>
+          <MentionChannelCard
+            keyword="삼성전자"
+            period="2025-06-09 ~ 2025-06-13"
+            totalCount={1000}
+            viewCount={500}
+            items={dummyItems}
+            height={cardHeight}
+          />
+        </Col>
+      </Row>
+    </div>
   );
 };
 

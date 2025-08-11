@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import {api} from '@shared/utils/api'
-import { Link, useNavigate } from 'react-router'
+import { api } from '@shared/utils/api'
+import { Link, useNavigate } from 'react-router-dom'
 import UserEditform from '../components/UserEditform'
-// import LinkGoogleButton from '../components/LinkGoogleButton'
 import OAuth2LinkSection from '../../auth/components/OAuth2LinkSection'
 import { fetchUserProfileThunk } from '../store/userThunk'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,16 +10,16 @@ import { useSubscription } from '../../subscription/hooks/useSubscription'
 import { checkSubStatThunk } from '../../subscription/store/subscriptionThunk'
 
 const MyPage = () => {
-    const user = useSelector(state => state.user.profile)
-    const loading = useSelector(state => state.user.loading)
-    const error = useSelector(state => state.user.error)
-    const [resendLoading, setResendLoading] = useState(false);
-    const [resendCooldown, setResendCooldown] = useState(0);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { hasActiveSub } = useSubscription();
+  const user = useSelector((state) => state.user.profile)
+  const loading = useSelector((state) => state.user.loading)
+  const error = useSelector((state) => state.user.error)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const { hasActiveSub } = useSubscription()
 
-    useEffect(() => {
+  useEffect(() => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
       .catch((err) => {
@@ -29,115 +28,144 @@ const MyPage = () => {
       })
   }, [dispatch])
 
-    // 재발송 쿨다운 타이머
-    useEffect(() => {
-        if (resendCooldown > 0) {
-            const timer = setTimeout(() => {
-                setResendCooldown(resendCooldown - 1);
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [resendCooldown]);
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [resendCooldown])
 
-    //구독 상태 조회
-    useEffect(()=> {
-        dispatch(checkSubStatThunk())
-    }, [dispatch])
+  useEffect(() => {
+    dispatch(checkSubStatThunk())
+  }, [dispatch])
 
-    // const fetchUserInfo = async () => {
-    //     try {
-    //         const response = await api.get('/users/me/details');
-    //         setUser(response.data.data);
-    //     } catch (error) {
-    //         if (error.response?.status === 401) {
-    //             navigate('/login');
-    //         }
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+  const handleResendVerification = async () => {
+    if (resendLoading || resendCooldown > 0) return
+    setResendLoading(true)
+    try {
+      await emailService.resendVerification()
+      alert('인증 메일이 재발송되었습니다. 이메일을 확인해주세요.')
+      setResendCooldown(60)
+    } catch (error) {
+      const errorMessage = error.response?.data || '재발송에 실패했습니다.'
+      alert(errorMessage)
+    } finally {
+      setResendLoading(false)
+    }
+  }
 
-    const handleResendVerification = async () => {
-        if (resendLoading || resendCooldown > 0) return;
-
-        setResendLoading(true);
-        try {
-            await emailService.resendVerification()
-            alert('인증 메일이 재발송되었습니다. 이메일을 확인해주세요.');
-            setResendCooldown(60); // 60초 쿨다운
-        } catch (error) {
-            const errorMessage = error.response?.data || '재발송에 실패했습니다.';
-            alert(errorMessage);
-        } finally {
-            setResendLoading(false);
-        }
-    };
-    if (loading) return <div>로딩중...</div>;
-    if (error) return <div style={{ color: 'red' }}>에러: {error}</div>
+  if (loading) return <div className="text-center py-10">로딩중...</div>
+  if (error) return <div className="text-red-500 text-center py-10">에러: {error}</div>
 
   return (
-    <div>
-        <h2>마이페이지</h2>
-        {/* 이메일 인증 필요 섹션 */}
-        {user &&!user.emailVerified && (
+    <main className="flex flex-col sm:flex-row gap-6 max-w-6xl mx-auto p-6">
+      <section className="w-full sm:w-64 flex-shrink-0">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="relative w-28 h-28 rounded-full overflow-hidden">
+            <img
+              src="https://static.some.co.kr/sometrend/images/mypage/profile/w_03.png"
+              alt="프로필"
+              className="w-full h-full object-cover"
+            />
+            <label
+              htmlFor="upload-avatar"
+              className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white opacity-0 hover:opacity-100 cursor-pointer transition"
+            >
+              <span className="text-xl">📷</span>
+              <div className="text-sm">프로필 변경</div>
+              <input
+                type="file"
+                id="upload-avatar"
+                accept=".gif, .jpg, .png"
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          <div className="text-center">
+            <div className="font-semibold text-lg">{user?.nickname || '닉네임 없음'}</div>
+            <div className="text-sm text-gray-500 mt-1">{user?.roles?.join(', ') || '직무 없음'}</div>
+          </div>
+
+          <div className="flex flex-col items-center w-full mt-6 gap-2">
+            <button
+              className="w-1/2 py-2 bg-white text-gray-800 rounded hover:bg-black hover:text-white text-sm font-semibold transition-colors duration-200"
+              onClick={() => navigate('/subscription-management')}
+            >
+              구독관리
+            </button>
+            <button
+              className="w-1/2 py-2 bg-white text-gray-800 rounded hover:bg-black hover:text-white text-sm font-semibold transition-colors duration-200"
+              onClick={() => navigate('/inquiry')}
+            >
+              1:1문의
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="flex-1">
+        <article>
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold">내 정보</h3>
+          </div>
+
+          <div className="space-y-6">
             <div>
-                <h2>이메일 인증 필요</h2>
-                <p>계정을 안전하게 사용하기 위해 이메일 인증을 완료해주세요.</p>
-                <button 
+              <h4 className="text-sm text-gray-600 mb-1">이메일</h4>
+              <p className="text-base">{user?.email || '없음'}</p>
+            </div>
+
+            <div>
+              <h4 className="text-sm text-gray-600 mb-1">이메일 인증</h4>
+              {user?.emailVerified ? (
+                <span className="inline-block bg-blue-600 text-white text-xs px-2 py-1 rounded">인증됨</span>
+              ) : (
+                <div className="text-sm text-red-500">
+                  인증되지 않음
+                  <button
                     onClick={handleResendVerification}
                     disabled={resendLoading || resendCooldown > 0}
-                >
-                    {resendLoading
-                        ? '발송 중...'
-                        : resendCooldown > 0
-                        ? `재발송 (${resendCooldown}초 후)`
-                        : '인증 메일 재발송'}
-                </button>
-                <button onClick={() => dispatch(fetchUserProfileThunk())}>
-                    새로고침
-                </button>
-                {resendCooldown > 0 && (
-                    <p style={{ 
-                        color: '#856404', 
-                        fontSize: '14px', 
-                        marginTop: '10px',
-                        marginBottom: 0 
-                    }}>
-                        스팸 방지를 위해 잠시 후 다시 시도해주세요.
-                    </p>
-                )}
-            </div>
-        )}
-        {/* 이메일 인증 완료 섹션 */}
-        {user && user.emailVerified && (
-            <div>
-                <div>
-                    <h2>계정 정보</h2>
-                    <p>이메일: {user.email}</p>
-                    <p>닉네임: {user.nickname || '설정되지 않음'}</p>
-                    <p>역할: {user.roles?.join(', ')}</p>
-                    <p>가입일: {new Date(user.createdAt).toLocaleDateString('ko-KR')}</p>
-                    <p>이메일 인증: 완료</p>
+                    className="ml-2 px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 text-xs"
+                  >
+                    {resendCooldown > 0 ? `재발송 (${resendCooldown})` : '인증 메일 재발송'}
+                  </button>
                 </div>
-
-                {/* OAuth2 연동 섹션 */}
-                <OAuth2LinkSection />
+              )}
             </div>
-        )}
 
-        {/* <LinkGoogleButton /> */}
-        {/* 사용자 정보 수정 폼 */}
-        <UserEditform />
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm text-gray-600 mb-1">직무</h4>
+                <p className="text-base">{user?.roles?.join(', ') || '직무 없음'}</p>
+              </div>
+            </div>
 
-        <section>
-            <h2>구독 관리</h2>
-            {hasActiveSub ? (
-                <Link to='/subscription/manage'>구독 관리하기</Link>
-            ) : (
-                <Link to='/subscription'>구독하기</Link>
-            )}
-        </section>
-    </div>
+            <div className="border-t pt-6">
+              <h3 className="text-xl font-semibold mb-3">구독 정보</h3>
+              <div className="flex items-center justify-between">
+                <div className="text-gray-500">
+                  {hasActiveSub ? '구독중입니다.' : '구독중인 서비스가 없습니다.'}
+                </div>
+                <button
+                  className="px-3 py-2 text-sm bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                  onClick={() => navigate(hasActiveSub ? '/subscription/manage' : '/subscription')}
+                >
+                  {hasActiveSub ? '구독 관리' : '구독 하러가기'}
+                </button>
+              </div>
+            </div>
+
+            <OAuth2LinkSection />
+            <UserEditform />
+
+            <div className="pt-10 text-right">
+              <a href="#" className="text-red-500 hover:underline">회원탈퇴 →</a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
   )
 }
 

@@ -8,30 +8,11 @@ import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login"
 import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "../features/auth/store/authThunk";
-import SubscriptionStatus from '@features/subscription/components/SubscriptionStatus'
 
 const Header = ({  toRegister, handleNavigation, SearchBar }) => {
-  // const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
-  const {isAuthenticated, user} = useSelector((state) => state.auth)
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
   const dispatch = useDispatch()
-  //   const CompanyRanking = () => (
-  //   <section className="ranks">
-  //     <h2 className="text-xl font-bold mb-4">기업 순위</h2>
-  //     <ul className="space-y-2">
-  //       {/* 예시 데이터 입력 */}
-  //       {["삼성전자", "네이버", "카카오", "현대차", "LG전자"].map(
-  //         (company, index) => (
-  //           <li key={company} className="flex justify-between text-gray-700">
-  //             <span>
-  //               {index + 1}. {company}
-  //             </span>
-  //             <span className="font-semibold text-blue-600">+2.4%</span>
-  //           </li>
-  //         )
-  //       )}
-  //     </ul>
-  //   </section>
-  // );
+  
   const [LoginModal, setLoginModal]= useState(false)
 
   const navigate = useNavigate()
@@ -44,8 +25,6 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               console.error('로그아웃 요청 실패:', err)
           }
       }
-
-  const isAdmin = user?.roles?.includes('ROLE_ADMIN')
 
   // const toLogin= {()=> setLoginModal(true)}
   return (
@@ -70,17 +49,12 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               </li>
               {/* <li><Link to="/" onClick={() => handleNavigation("home")}>Home</Link></li> */}
               <li><Link to="/PageA" onClick={() => handleNavigation("pageA")}>PageA</Link></li>
-              <li><Link to="/info" onClick={() => handleNavigation("info")}>Info</Link></li>
+              {/* <li><Link to="/info" onClick={() => handleNavigation("info")}>Info</Link></li> */}
+              <li><Link to="/Admin" onClick={() => handleNavigation("Admin")}>관리자</Link></li>
+
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
-              {/* <li><Link to="/subscription">구독하기</Link></li> */}
               {isAuthenticated && (
-                <>
-                {isAdmin && (
-                  <li><Link to='/admin/dashboard'>관리자 대시보드</Link></li>
-                )}
                 <li><Link to="/mypage">마이페이지</Link></li>
-                </>
-                
               )}
             </ul>
 
@@ -90,7 +64,6 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
 
                   {isAuthenticated ? (
                     <>
-                      <SubscriptionStatus />
                       <button onClick={handleLogout}>로그아웃</button>
                     </>   
                   ) : (

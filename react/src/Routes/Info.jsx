@@ -74,7 +74,7 @@ const Info = () => {
             <td className="px-4 py-3 text-center">
               <div className="flex items-center justify-center gap-2">
                 <Link
-                  to={`/Semi/company`}
+                  to={`/semi/company?company=${encodeURIComponent(item.name)}`}
                   className="text-indigo-600 font-medium hover:underline hover:text-indigo-800 transition duration-150"
                 >
                   {item.name.replace(/[^\p{L}\s]/gu, "")}
