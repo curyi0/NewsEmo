@@ -9,6 +9,7 @@ import subscription from '@features/subscription/store/subscriptionSlice'
 import reviewAnalysis from './reducerSlices/reviewAnalysisSlice'
 import adminUsers from '@features/admin/store/adminUserSlice'
 import adminRefunds from '@features/admin/store/adminRefundSlice'
+import adminRefreshToken from '@features/admin/store/adminRefreshTokenSlice'
 
 const store = configureStore({
     reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
         reviewAnalysis,
         adminUsers,
         adminRefunds,
+        adminRefreshToken,
         // info
     },
     devTools: true,

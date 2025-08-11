@@ -102,7 +102,7 @@ export const logoutThunk = createAsyncThunk(
 
 export const restoreUserThunk = createAsyncThunk(
     'auth/restoreUser',
-    async (_, { dispatch }) => {
+    async (_, { dispatch, }) => {
         dispatch(setLoading(true))
         try {
             console.log('authService.tryResptoreUser()')

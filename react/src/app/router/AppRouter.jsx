@@ -48,6 +48,43 @@ import AdminUserPage from '../../features/admin/pages/AdminUserPage'
 import AdminDashboard from '../../features/admin/pages/AdminDashboard'
 import ProtectedAdminRoute from './ProtectedAdminRoute'
 import AdminRefundPage from '../../features/admin/pages/AdminRefundPage'
+import AdminRefreshTokenPage from '../../features/admin/pages/AdminRefreshTokensPage'
+// SearchBar 정의 부분
+// const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, searchType, setSearchType }) => { // (A) 여기서 받는 props는 onSubmit, loading, navigate 뿐입니다.
+//   // console.log("임포트확인:" ,setSearchTerm)
+
+//   return (
+//     <div className="search-bar-wrapper">
+//       {/* 라디오 버튼 추가 */}
+//       <Radio.Group
+//         value={searchType}
+//         onChange={e => setSearchType(e.target.value)}
+//         style={{ marginBottom: 8 }}
+//       >
+//         <Radio value="name">기업이름</Radio>
+//         <Radio value="type">분야</Radio>
+//       </Radio.Group>
+
+//       <form onSubmit={onSubmit} className="search-form">
+//         <input
+//           type="text"
+//           placeholder="회사명 입력하세요..."
+//           value={searchTerm} // (B) 이 searchTerm은 props가 아니라 App의 변수를 직접 사용하고 있습니다.
+//           onChange={(e) => setSearchTerm(e.target.value)} // (C) 이 setSearchTerm은 어디에도 정의되지 않은 변수라 에러가 발생합니다!
+//           disabled={loading}
+//           className="search-input"
+//         />
+//         <button
+//           type="submit"
+//           className="search-button"
+//           disabled={loading}
+//         >
+//           {loading ? "검색중..." : "검색"}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// });
 
 const AppRouter = () => {
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
@@ -178,6 +215,7 @@ const AppRouter = () => {
                     <Route path='/admin/dashboard' element={<AdminDashboard />} />
                     <Route path='/admin/users' element={<AdminUserPage />} />
                     <Route path='/admin/refunds' element={<AdminRefundPage />} />
+                    <Route path='/admin/refresh-tokens' element={<AdminRefreshTokenPage />} />
                 </Route>
             </Routes>
             </main>

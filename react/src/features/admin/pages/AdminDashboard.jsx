@@ -8,6 +8,7 @@ const AdminDashboard = () => {
             <ul>
                 <li><Link to="/admin/users">회원 관리</Link></li>
                 <li><Link to="/admin/refunds">환불 관리</Link></li>
+                <li><Link to='/admin/refresh-tokens'>Refresh Token 관리</Link></li>
             </ul>
         </div>
     )
