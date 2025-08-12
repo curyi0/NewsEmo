@@ -10,7 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "../features/auth/store/authThunk";
 
 const Header = ({  toRegister, handleNavigation, SearchBar }) => {
-  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+  // const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+  const { isAuthenticated, user } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   
   const [LoginModal, setLoginModal]= useState(false)
@@ -25,6 +26,8 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               console.error('로그아웃 요청 실패:', err)
           }
       }
+
+      const isAdmin = user?.roles?.includes('ROLE_ADMIN')
 
   // const toLogin= {()=> setLoginModal(true)}
   return (
@@ -52,7 +55,12 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
               )}
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
               {isAuthenticated && (
+                <>
+                {isAdmin && (
+                  <li><Link to='/admin/dashboard'>관리자 대시보드</Link></li>
+                )}
                 <li><Link to="/mypage">마이페이지</Link></li>
+                </>
               )}
             </ul>
 
