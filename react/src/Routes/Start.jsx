@@ -11,7 +11,7 @@ import kakaoImg from '../images/kakao.png';
 import kiaImg from '../images/kia.png';
 import samsungImg from '../images/samsung.png';
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 
 // SearchBar 정의 부분
@@ -66,7 +66,7 @@ const SearchBar = React.memo(({ searchTerm, setSearchTerm, onSubmit, loading, se
 const Start = () => {
   const [searchTerm, setSearchTerms] = useState("");
   const [searchType, setSearchType] = useState("name")
-
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
   const navigate= useNavigate()
   const dispatch= useDispatch()
    const handleSubmit = (e) => {
@@ -108,27 +108,30 @@ const Start = () => {
 
     return (
       <div className="my-12 font-sans">
-        <h2 className="text-xl font-bold text-left mb-4">주요 기업 소식( 최근 이슈 기업)</h2>
+        <h2 className="text-xl font-bold text-left mb-4">주요 기업 소식(최근 이슈 기업)</h2>
         <div className="flex justify-center">
           <div className="w-full max-w-3xl">
             <Carousel>
               {images.map((image, index) => (
-                <Carousel.Item key={index}>
+                <Carousel.Item key={index} style={{marginBottom:"20px"}}>
                   <div
                     style={{
-                      height: '250px',
+                      height: '270px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      backgroundColor: '#84b0dbff',
+                      backgroundColor: '#abcdf0ff',
                     }}
                   >
                     <img
                       className="d-block"
                       style={{
-                        maxHeight: '80%',
-                        maxWidth: '80%',
+                        maxHeight: '100%',
+                        maxWidth: '100%',
                         objectFit: 'contain',
+                        alignContent: 'center',
+                        justifyContent:'center',
+                        // display: "inline-flex"
                       }}
                       src={image.src}
                       alt={image.alt}
@@ -154,6 +157,7 @@ const Start = () => {
                 &nbsp;
                 <span className="text-purple-800 font-bold underline decoration-purple-400/70">인사이트</span>도 한 눈에,
               </p>
+              { isAuthenticated && (
               <SearchBar
             searchTerm={searchTerm} // `searchTerm` prop을 전달했지만
             setSearchTerm={setSearchTerms} // 
@@ -161,6 +165,7 @@ const Start = () => {
             setSearchType={setSearchType}
             onSubmit={handleSubmit} // `onSubmit` prop은 (A)에서 잘 받고 사용합니다.
             ></SearchBar>
+          )}
           </div>
         </div>
         <Ranking />

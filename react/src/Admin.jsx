@@ -9,13 +9,15 @@ const { Sider, Content } = Layout;
 
 const Admin = () => {
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const Loaded= sessionStorage.getItem("adminLoaded")
     // 오직 /Admin 경로에서만 로딩
-    if (location.pathname === "/Admin") {
+    if (location.pathname === "/Admin" && !Loaded) {
       setLoading(true);
-      const timer = setTimeout(() => setLoading(false), 1500);
+      const timer = setTimeout(() => {setLoading(false)
+      sessionStorage.setItem("adminLoaded","true") }, 1500);
       return () => clearTimeout(timer);
     } else {
       setLoading(false);

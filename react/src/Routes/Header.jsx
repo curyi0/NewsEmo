@@ -47,11 +47,9 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
                   onClick={() => navigate("/")}
                 />
               </li>
-              {/* <li><Link to="/" onClick={() => handleNavigation("home")}>Home</Link></li> */}
-              <li><Link to="/PageA" onClick={() => handleNavigation("pageA")}>PageA</Link></li>
-              {/* <li><Link to="/info" onClick={() => handleNavigation("info")}>Info</Link></li> */}
+              { isAuthenticated  &&(
               <li><Link to="/Admin" onClick={() => handleNavigation("Admin")}>관리자</Link></li>
-
+              )}
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
               {isAuthenticated && (
                 <li><Link to="/mypage">마이페이지</Link></li>
