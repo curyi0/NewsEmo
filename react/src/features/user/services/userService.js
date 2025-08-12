@@ -67,4 +67,13 @@ export const userService = {
       throw new ApiError(err?.response?.data || err)
     }
   },
+
+  withdrawService: async (data) => {
+    const res = await userApi.withdrawApi(data)
+    if (!res?.success) {
+      const msg = res?.message || '탈퇴 처리에 실패했습니다.'
+      throw new Error(msg)
+    }
+    return { message : res.message || '탈퇴 처리되었습니다. 14일 후 영구 삭제됩니다.'}
+  }
 }

@@ -1,5 +1,6 @@
 import { getAndUnwrap } from '@shared/utils/api'
 import { postAndUnwrap, putAndUnwrap } from '../../../shared/utils/api'
+import { api} from '@shared/utils/api'
 
 export const userApi = {
   /**
@@ -43,5 +44,10 @@ export const userApi = {
     getAndUnwrap('/users/pending-social-link'),
 
   // // 회원 탈퇴
-  // withdrawApi: ()
+  withdrawApi: async (password) => {
+    const res = await api.delete('/users/me', {
+      data: password ? { password} : {}
+    })
+    return res.data
+  }
 }

@@ -3,11 +3,12 @@ import { api } from '@shared/utils/api'
 import { Link, useNavigate } from 'react-router-dom'
 import UserEditform from '../components/UserEditform'
 import OAuth2LinkSection from '../../auth/components/OAuth2LinkSection'
-import { fetchUserProfileThunk } from '../store/userThunk'
+import { fetchUserProfileThunk} from '../store/userThunk'
 import { useDispatch, useSelector } from 'react-redux'
 import { emailService } from '../../email/services/emailService'
 import { useSubscription } from '../../subscription/hooks/useSubscription'
 import { checkSubStatThunk } from '../../subscription/store/subscriptionThunk'
+import WithdrawModal from '../components/WithdrawModal'
 
 const MyPage = () => {
   const user = useSelector((state) => state.user.profile)
@@ -18,6 +19,9 @@ const MyPage = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { hasActiveSub } = useSubscription()
+  const [isOpen, setIsOpen] = useState(false)
+  const [withdrawOpen, setWithdrawOpen] = useState(false)
+
 
   useEffect(() => {
     dispatch(fetchUserProfileThunk())
@@ -193,8 +197,19 @@ const MyPage = () => {
             <UserEditform />
 
             <div className="pt-10 text-right">
-              <a href="#" className="text-red-500 hover:underline">회원탈퇴 →</a>
+              <button
+                type='button'
+                className='text-red-600 hover:underline'
+                onClick={() => setWithdrawOpen(true)}
+              >
+                회원탈퇴 →
+              </button>
             </div>
+            <WithdrawModal
+              open={withdrawOpen}
+              onClose={()=>setWithdrawOpen(false)}
+              requirePassword={true}
+            />
           </div>
         </article>
       </section>

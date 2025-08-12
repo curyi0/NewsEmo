@@ -59,3 +59,15 @@ export const updateUserInfoThunk = createAsyncThunk(
 //     }
 //   }
 // )
+
+export const withdrawThunk = createAsyncThunk(
+  'user/withdraw',
+  async (password, {rejectWithValue}) => {
+    try {
+      const res = await userService.withdrawService(password)
+      return res
+    } catch (err) {
+      return rejectWithValue(err?.message || '탈퇴 처리 중 오류가 발생했습니다.')
+    }
+  }
+)
