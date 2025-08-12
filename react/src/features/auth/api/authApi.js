@@ -84,6 +84,18 @@ export const authApi = {
    */
   oauth2Complete: () => getAndUnwrap('/auth/oauth2/complete'),
 
+  //탈퇴 복구
+  reactivateApi: async ({email, password}) => {
+    try {
+      const res = await api.post('/auth/reactivate', {email, password})
+      return res // headers 포함
+    } catch (err) {
+      const res = err.response
+      if(res?.data?.code) throw new ApiError(res.data)
+      throw err
+    }
+  },
+
   /**
    * 비밀번호 재설정 요청
    * @param {string} email - 이메일
