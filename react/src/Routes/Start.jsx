@@ -71,7 +71,11 @@ const Start = () => {
   const dispatch= useDispatch()
    const handleSubmit = (e) => {
     // useCallback((e) => {
-    e.preventDefault();
+      e.preventDefault();
+    if(!isAuthenticated) {
+      alert("로그인 후 이용해주세요.")
+      return navigate("/")}
+
     if (searchTerm.trim()) 
       dispatch(setSearchTerm(searchTerm)); // 가져옴
     //   // (searchTerm.trim());
@@ -88,7 +92,8 @@ const Start = () => {
     else if (searchType === "type") {
       dispatch(fetchCompaniesByType(searchTerm.trim()));
     }
-    navigate("/info")
+  
+  navigate("/info")
   }
 
   // CompanyLists 컴포넌트 정의
@@ -157,7 +162,7 @@ const Start = () => {
                 &nbsp;
                 <span className="text-purple-800 font-bold underline decoration-purple-400/70">인사이트</span>도 한 눈에,
               </p>
-              { isAuthenticated && (
+              {/* { isAuthenticated && ( */}
               <SearchBar
             searchTerm={searchTerm} // `searchTerm` prop을 전달했지만
             setSearchTerm={setSearchTerms} // 
@@ -165,7 +170,7 @@ const Start = () => {
             setSearchType={setSearchType}
             onSubmit={handleSubmit} // `onSubmit` prop은 (A)에서 잘 받고 사용합니다.
             ></SearchBar>
-          )}
+          {/* )} */}
           </div>
         </div>
         <Ranking />

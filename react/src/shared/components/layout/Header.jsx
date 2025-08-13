@@ -11,7 +11,7 @@ const Header = () => {
     const handleLogout = async () => {
         try {
             await dispatch(logoutThunk()).unwrap()
-            navigate('/login')
+            navigate('/')
         } catch (err) {
             console.error('로그아웃 요청 실패:', err)
         }
@@ -28,7 +28,7 @@ const Header = () => {
                     </>
                     
                 ) : (
-                    <Link to="/login">로그인</Link>
+                    <Link to="/">로그인</Link>
                 )}
             </nav>
         </header>

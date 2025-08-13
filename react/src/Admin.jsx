@@ -12,9 +12,9 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const Loaded= sessionStorage.getItem("adminLoaded")
+    // const Loaded= sessionStorage.getItem("adminLoaded")
     // 오직 /Admin 경로에서만 로딩
-    if (location.pathname === "/Admin" && !Loaded) {
+    if (location.pathname === "/Admin") {
       setLoading(true);
       const timer = setTimeout(() => {setLoading(false)
       sessionStorage.setItem("adminLoaded","true") }, 1500);
@@ -36,7 +36,7 @@ const Admin = () => {
   return (
     <div style={{ minHeight: "100vh" }}>
       <h3 style={{textAlign:"center", fontFamily:"'Noto Sans KR', sans-serif", margin: "20px 0"}}>
-        관리자 전용 페이지 입니다.
+        {/* 관리자 전용 페이지 입니다. */}
       </h3>
       <Layout style={{ minHeight: "calc(100vh - 80px)" }}>
         <Sider width={250} style={{ background: "#fff" }}>

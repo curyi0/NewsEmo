@@ -20,6 +20,7 @@ const categories = [
 
 const Chatbot = () => {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const navigate = useNavigate();
   const Base_URL = "http://localhost:8000/api/chatbot";
   const { list, status, keyword } = useSelector(
@@ -134,7 +135,7 @@ const Chatbot = () => {
           lastMessage.text.includes("관련 기업 정보를 불러오고 있어요")
         ) {
           return [
-            ...filteredMessages.slice(0, -1), // 검색 중 메시지도 제거
+            ...filteredMessages.slice(0, -1), // 검색 중 메시지도 제거 (카테고리로 와도 검색결과가있음)
             { from: "bot", text: "질문 카테고리를 다시 선택해 주세요." },
           ];
         }
@@ -186,19 +187,26 @@ const Chatbot = () => {
           Array.isArray(Response.articles) &&
           Response.articles.length > 0
         ) {
-          // 최신 뉴스 2개만 가져오기
+          // 최신 뉴스 3개만 가져오기
           const latestNews = Response.articles
             .slice(0, 3)
-            .map((news, idx) => `${idx + 1}. ${news.title || "제목 없음"}\n`);
-
+            .map((news, idx) => `${idx + 1}. ${news.title || "제목 없음"}`+` ${news.link}\n`);
+        //   const latestNews = Response.articles
+        //     .slice(0, 3)
+        //     .map((news, idx) => `${idx + 1}. ${news.title || "제목 없음"}\n`+
+        //     (news.link.includes('http') ?
+        // `<a href="${news.link}" target="_blank" rel="noopener noreferrer">${news.link}</a>` :
+        // `<Link to="${news.link}">${news.link}</Link>`)) 내부 링크
+          
           setMessages((prev) => [
             ...prev,
             {
               from: "bot",
-              text: `📰 ${company_name}의 최신 뉴스 3개입니다:\n\n${latestNews.join(
-                ""
-              )}`,
+              text: `📰 ${company_name}의 최신 뉴스 3개입니다:\n\n${latestNews.join("")}`,
             },
+          // return(
+          //    <></>
+          // )
           ]);
         } else {
           setMessages((prev) => [
@@ -281,15 +289,21 @@ const Chatbot = () => {
         ...prev,
         {
           from: "bot",
-          text: `반갑습니다! 저희 NewsEmo는 AI 기반 기업 여론 분석 시스템입니다.\n저희 사이트는 \n1. 뉴스 기반 감정 및 키워드 분석 \n2. 실제 리뷰 기반 기업 만족도 점수 평가
-          \n3. 기업 랭킹 \n4. 익명 기업 리뷰 시스템 \n 등, 서비스를 이용하고 인사이트를 제공받아보세요!`,
+          text: `반갑습니다! 저희 NewsEmo는 AI 기반 기업 여론 분석 시스템입니다.\n| 저희 사이트에서 |
+1. 뉴스 기반 감정 및 키워드 분석 \n2. 실제 리뷰 기반 기업 만족도 점수 평가\n3. 기업 랭킹 \n4. 익명 기업 리뷰 시스템 
+등, 서비스를 이용하고 인사이트를 제공받아보세요!`,
         },
       ]);
+      return
     }
-    //if ( !isAuthenticated){alert("로그인 후 이용바랍니다") return}
-    else if (cat.key === "service") {
-      setShowServiceForm(true);
-      setMessages((prev) => [
+
+    if(!isAuthenticated) {
+      confirm("로그인 후 이용바랍니다") 
+      return
+    }     
+     if (cat.key === "service") {
+       setShowServiceForm(true);
+       setMessages((prev) => [
         ...prev,
         { from: "bot", text: "서비스 문의 양식을 작성해 주세요." },
       ]);
@@ -297,19 +311,20 @@ const Chatbot = () => {
       setMessages((prev) => [
         ...prev,
         { from: "bot", text: "검색할 기업 정보를 입력해주세요" },
-      ]);
-      // handleSend()
-    } else if (cat.key === "news") {
-      setMessages((prev) => [
-        ...prev,
-        {
-          from: "bot",
+        ]);
+        // handleSend()
+      } else if (cat.key === "news") {
+        setMessages((prev) => [
+          ...prev,
+          {
+            from: "bot",
           text: ` ${cat.label} | 어떤 기업의 뉴스를 찾고계시나요?`,
         },
       ]);
-      handleSend();
     }
-  };
+      handleSend();
+  }
+  ;
 
   const handleServiceFormChange = (field, value) => {
     setServiceFormData((prev) => ({
@@ -414,7 +429,6 @@ const Chatbot = () => {
                 ))}
               </div>
             )}
-            {/* 뉴스 찾기 */}
 
             {/* 기업 검색결과 */}
 

@@ -50,14 +50,15 @@ const Header = ({  toRegister, handleNavigation, SearchBar }) => {
                   onClick={() => navigate("/")}
                 />
               </li>
-              { isAuthenticated  &&(
-              <li><Link to="/Admin" onClick={() => handleNavigation("Admin")}>관리자</Link></li>
-              )}
               {/* <li><Link to="/semi/mention" onClick={() => handleNavigation("semi")}>상세</Link></li> */}
               {isAuthenticated && (
                 <>
                 {isAdmin && (
-                  <li><Link to='/admin/dashboard'>관리자 대시보드</Link></li>
+                  <>
+                  {/* 둘중 아무거나? */}
+                    <li><Link to="/Admin" onClick={() => handleNavigation("Admin")}>관리자</Link></li>
+                    {/* <li><Link to='/admin/dashboard'>관리자 대시보드</Link></li> */}
+                  </>
                 )}
                 <li><Link to="/mypage">마이페이지</Link></li>
                 </>
