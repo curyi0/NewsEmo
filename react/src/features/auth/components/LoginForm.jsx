@@ -133,6 +133,12 @@ const LoginForm = () => {
         okText='복구'
         cancelText='취소'
         confirmLoading={loading} // 전역 loading 사용
+        okButtonProps={{
+          style: {
+            backgroundColor: '#1677ff',
+            color: 'white'
+          }
+        }}
       >
         <p>탈퇴 유예 중인 계정입니다. 복구하려면 비밀번호를 입력하세요.</p>
         <Input value={form.email} disabled style={{marginBottom: 8}} />

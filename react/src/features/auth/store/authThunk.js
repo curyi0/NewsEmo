@@ -160,15 +160,15 @@ export const oauth2CompleteThunk = createAsyncThunk(
 // 계정 복구
 export const reactivateThunk = createAsyncThunk(
   'auth/reactivate',
-  async ({email, password}, {dispatch, rejectWithValue}) => {
+  async (credentials, {dispatch, rejectWithValue}) => {
     try {
       dispatch(setLoading(true))
-      await authService.reactivate({email, password})
-      const { user} = await authService.loginService({email, password})
+      await authService.reactivate(credentials)
+      const { user} = await authService.loginService(credentials)
       dispatch(setUser(user))
       return user
     } catch (err) {
-      const msg = err?.message || '계정 복구 실패'
+      const msg = err?.message || err?.response?.data?.message || '계정 복구 실패'
       dispatch(setError(msg))
       return rejectWithValue({message: msg})
     } finally {

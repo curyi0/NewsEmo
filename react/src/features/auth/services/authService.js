@@ -237,8 +237,8 @@ export const authService = {
   },
 
   // 계정 복구
-  reactivate: async (email, password) => {
-    const res= await authApi.reactivateApi({email, password})
-    return res.data
+  reactivate: async (credentials) => {
+    const res= await authApi.reactivateApi(credentials)
+    return res
   }
 }

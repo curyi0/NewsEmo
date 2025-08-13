@@ -3,6 +3,9 @@ import { clearAccessToken, saveAccessFromHeaders } from '../utils';
 import { getAndUnwrap, refreshApi, unwrapApiResponse, unwrapApiResponseWithoutData } from '../../../shared/utils/api';
 import { ApiError } from '@shared/errors/ApiError';
 
+// 공통 unwrapping
+const unwrap = (res) => res?.data?.data ?? res?.data
+
 export const authApi = {
     /**
    * 회원가입
@@ -88,9 +91,9 @@ export const authApi = {
   reactivateApi: async ({email, password}) => {
     try {
       const res = await api.post('/auth/reactivate', {email, password})
-      return res // headers 포함
+      return unwrap(res) // headers 포함
     } catch (err) {
-      const res = err.response
+      const res = err?.response
       if(res?.data?.code) throw new ApiError(res.data)
       throw err
     }
