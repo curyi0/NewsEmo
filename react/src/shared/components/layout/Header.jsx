@@ -28,7 +28,7 @@ const Header = () => {
                     </>
                     
                 ) : (
-                    <Link to="/">로그인</Link>
+                    <Link to="/login">로그인</Link>
                 )}
             </nav>
         </header>

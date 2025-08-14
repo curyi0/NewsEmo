@@ -234,5 +234,11 @@ export const authService = {
       }
       throw err
     }
+  },
+
+  // 계정 복구
+  reactivate: async (credentials) => {
+    const res= await authApi.reactivateApi(credentials)
+    return res
   }
 }

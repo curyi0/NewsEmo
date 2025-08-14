@@ -191,6 +191,7 @@ const Chatbot = () => {
           const latestNews = Response.articles
             .slice(0, 3)
             .map((news, idx) => `${idx + 1}. ${news.title || "제목 없음"}`+` ${news.link}\n`);
+
         //   const latestNews = Response.articles
         //     .slice(0, 3)
         //     .map((news, idx) => `${idx + 1}. ${news.title || "제목 없음"}\n`+
@@ -202,6 +203,9 @@ const Chatbot = () => {
             ...prev,
             {
               from: "bot",
+              type: "newsList",
+              data: latestNews,
+              // text: `📰 ${company_name}의 최신 뉴스 3개입니다:\n}`,
               text: `📰 ${company_name}의 최신 뉴스 3개입니다:\n\n${latestNews.join("")}`,
             },
           // return(
@@ -441,7 +445,7 @@ const Chatbot = () => {
                       <div
                         key={company.id}
                         className="chatbot-result-item"
-                        onClick={() => navigate(`/semi/company/${company.id}`)}
+                        onClick={() => navigate(`/semi/company?company=${company.name}`)}
                         style={{
                           cursor: "pointer",
                           padding: "4px 0",
@@ -455,7 +459,45 @@ const Chatbot = () => {
                   </div>
                 );
               }
+              // else if (msg.type === "newsList") {
+              //   return (
+              //     <div key={idx} className="chatbot-msg-bot">
+              //       <div>{msg.text}</div>
+              //       {msg.data.map((news, newsIdx) => (
+              //         console.log("뉴스 데이터:", news),
+              //         console.log("뉴스 index:", newsIdx),
+              //         <div
+              //           key={newsIdx}
+              //           className="chatbot-news-item"
+              //           style={{
+              //             padding: "8px 0",
+              //             borderBottom: "1px solid #e5e7eb",
+              //             marginBottom: "8px"
+              //           }}
+              //         >
+              //           <div style={{ marginBottom: "4px", fontWeight: "500" }}>
+              //             {newsIdx + 1}. {news.title || "제목 없음"}
+              //           </div>
+              //           <div
+              //             style={{
+              //               color: "#3b82f6",
+              //               cursor: "pointer",
+              //               textDecoration: "underline",
+              //               fontSize: "14px"
+              //             }}
+              //             onClick={() => window.open(news.link, '_blank')}
+              //           >
+              //             🔗 뉴스 보러가기
+              //           </div>
+              //         </div>
+              //       ))}
+              //     </div>
+              //   );
+              // }
+
             })}
+            {/* news검색후 링크 */}
+
             {/* 서비스 문의 양식 */}
             {showServiceForm && (
               <div className="chatbot-service-form">

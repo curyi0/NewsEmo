@@ -4,6 +4,7 @@ import { setUser, setLoading, setError, clearAuth, setWarning } from './authSlic
 import { ApiError } from '../../../shared/errors/ApiError'
 import { checkSubStatThunk, fetchSubDetailsThunk } from '../../subscription/store/subscriptionThunk'
 import { resetSubscriptionState } from '../../subscription/store/subscriptionSlice'
+import { message } from 'antd'
 
 export const loginThunk = createAsyncThunk(
   'auth/login',
@@ -17,8 +18,18 @@ export const loginThunk = createAsyncThunk(
       dispatch(setUser(user))
       return user
     } catch (err) {
-      dispatch(setError(err.message))
-      return rejectWithValue(err.message)
+      // ApiError로 넘어온 경우
+      if (err instanceof ApiError) {
+        // inactive계정
+        if (err.code === 'ACCOUNT_INACTIVE') {
+          return rejectWithValue({code:'ACCOUNT_INACTIVE', message: err.message})
+        }
+        return rejectWithValue({code: err.code, message: err.message})
+      }
+      // 그외 일반 에러
+      const msg = err?.message || '로그인 실패'
+      dispatch(setError(msg))
+      return rejectWithValue({code: '', message: msg})
     } finally {
       dispatch(setLoading(false))
     }
@@ -140,6 +151,26 @@ export const oauth2CompleteThunk = createAsyncThunk(
         return rejectWithValue(err.message)
       }
       return rejectWithValue('OAuth2 인증 처리 실패')
+    } finally {
+      dispatch(setLoading(false))
+    }
+  }
+)
+
+// 계정 복구
+export const reactivateThunk = createAsyncThunk(
+  'auth/reactivate',
+  async (credentials, {dispatch, rejectWithValue}) => {
+    try {
+      dispatch(setLoading(true))
+      await authService.reactivate(credentials)
+      const { user} = await authService.loginService(credentials)
+      dispatch(setUser(user))
+      return user
+    } catch (err) {
+      const msg = err?.message || err?.response?.data?.message || '계정 복구 실패'
+      dispatch(setError(msg))
+      return rejectWithValue({message: msg})
     } finally {
       dispatch(setLoading(false))
     }
